@@ -93,12 +93,19 @@ fn main() {
     file.read_to_end(&mut buf).unwrap();
 
     file.read_to_string(&mut string).unwrap();
-    println!("{:?}", buf);
+
+    let mut sizeofvec = buf[3];
+
+    let mut v1: Vec<&str> = Vec::new();
+    let mut v1 = [;sizeofvec]; 
+
+
+    println!("{:?}", sizeofvec);
+    println!("{:?}", v1);
 
     //let mut reader = BufReader::new(file);
 
    // println!("{:?}", string);
-    let mut v1: Vec<&str> = Vec::new(); 
    // let v1: Vec<&str> = string.lines().collect();// reads in the file into a str vector
     let mut v2: Vec<&str> = Vec::new(); 
    // let mut v2: Vec<&str> = string.split_whitespace().collect();
