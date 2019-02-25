@@ -10,7 +10,9 @@ TASKS
 use std::fs::File;
 use std::io::Read;
 
+
 type Address = usize;
+
 
 
 #[derive(Debug,Clone)]
@@ -71,25 +73,32 @@ pub enum Binop {
     Lt,  //Returns true if one i32 is less than another, otherwise false
     Eq,  //Returns true if one i32 is equal another, otherwise false
 }
+
 fn main() {
+
+
 
 	let mut string = String::new(); // string of what is in the .s file
     let mut file = File::open("applam.o").expect("file did not open");
+
+    let 
     file.read_to_string(&mut string);
+    file.read_to_end(&mut string);
 
-    println!("{:?}", string);
-    let mut v1: Vec<&str> = Vec::new(); 
+
+    let mut v1: Vec<u8> = Vec::new(); 
     let v1: Vec<&str> = string.lines().collect();
-    let mut v2: Vec<&str> = Vec::new(); 
-   // let mut v2: Vec<&str> = string.split_whitespace().collect();
+   // let mut v2: Vec<&str> = Vec::new(); 
+   //let mut v2: Vec<&str> = string.split_whitespace().collect();
+
+    	 println!("{:?}", v1);
 
 
+    // for i in v1
+    // {
+    // 	 println!("{:?}", i);
 
-    for i in v1
-    {
-    	 println!("{:?}", i);
-
-    }
+    // }
 
 
 }
