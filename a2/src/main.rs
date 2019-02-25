@@ -74,7 +74,7 @@ pub enum Binop {
 fn main() {
 
 	let mut string = String::new(); // string of what is in the .s file
-    let mut file = File::open("test.s").expect("file did not open");
+    let mut file = File::open("applam.o").expect("file did not open");
     file.read_to_string(&mut string);
 
     println!("{:?}", string);
