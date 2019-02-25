@@ -9,6 +9,10 @@ TASKS
 
 use std::fs::File;
 use std::io::Read;
+use std::io::prelude::*;
+use std::io;
+use std::io::BufReader;
+use std::io::BufRead;
 
 
 type Address = usize;
@@ -80,25 +84,24 @@ fn main() {
 
 	let mut string = String::new(); // string of what is in the .s file
     let mut file = File::open("applam.o").expect("file did not open");
+    
+    //file.read_to_string(&mut string);
+    // let mut buf = [0u8;12];
+    // file.read(&mut buf).unwrap();
+    let mut buf: Vec<u8> = Vec::new();
+    //let mut buf = Vec::new();
+    file.read_to_end(&mut buf).unwrap();
 
-    let 
-    file.read_to_string(&mut string);
-    file.read_to_end(&mut string);
+    file.read_to_string(&mut string).unwrap();
+    println!("{:?}", buf);
 
+    //let mut reader = BufReader::new(file);
 
-    let mut v1: Vec<u8> = Vec::new(); 
-    let v1: Vec<&str> = string.lines().collect();
-   // let mut v2: Vec<&str> = Vec::new(); 
-   //let mut v2: Vec<&str> = string.split_whitespace().collect();
-
-    	 println!("{:?}", v1);
-
-
-    // for i in v1
-    // {
-    // 	 println!("{:?}", i);
-
-    // }
+   // println!("{:?}", string);
+    let mut v1: Vec<&str> = Vec::new(); 
+   // let v1: Vec<&str> = string.lines().collect();// reads in the file into a str vector
+    let mut v2: Vec<&str> = Vec::new(); 
+   // let mut v2: Vec<&str> = string.split_whitespace().collect();
 
 
 }
