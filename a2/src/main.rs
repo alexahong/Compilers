@@ -96,8 +96,15 @@ fn main() {
     let mut instrvec: Vec<&Instr> = Vec::new(); // new vec to store instructions
 
 
+    //println!("vec_of_chars: {:?}", vec_of_chars);
+
+    let mut instrvec: Vec<&char> = Vec::new(); // new vec to store instructions
 
     
+
+
+
+    println!("{:?}\n",binvec );
 
 
 
