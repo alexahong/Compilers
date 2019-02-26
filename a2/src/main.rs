@@ -7,6 +7,10 @@ TASKS
 4. print last item in stack to stdout
 */
 //use std::env;
+extern crate byteorder;
+use std::io::Cursor;
+use byteorder::{BigEndian, ReadBytesExt};
+
 use std::fs::File;
 use std::io::Read;
 use std::io::prelude::*;
@@ -78,10 +82,19 @@ pub enum Binop {
     Lt,  //Returns true if one i32 is less than another, otherwise false
     Eq,  //Returns true if one i32 is equal another, otherwise false
 }
+//need to reverse this to FromBin
 
-// fn FromBin()->{
-
+// trait FromBin{
+//     fn from_bin(self: &self)->Vec<u8>;
 // }
+// impl FromBin for u32{
+//     fn from_bin(self: &self)->Vec<u8>{
+//         let v = vec![0,0,0,0];
+//         ByteOrder::read_u32(v);
+//     }
+// }
+// <u32 as ToBin>::to_bin();//how to call it
+// Instr::to_bin();//how to call Val, Binop, Unop
 
 fn main() {
 
@@ -97,11 +110,11 @@ fn main() {
 
     //file.read_to_string(&mut string).unwrap();
 
-   // let mut sizeofvec = binvec[3];
+    let mut sizeofvec = binvec[3];
     let b = &binvec[0..4];//vector gets the first for bytes for size of 
-    println!("{:?}", b[3]);//b is a u8 and needs to be a usize
+    println!("{:?}", b);//b is a u8 and needs to be a usize
     
-    let mut instrvec: Vec<&Instr> = Vec::capacity(b); // new vec to store instructions
+   // let mut instrvec: Vec<&Instr> = Vec::capacity(b); // new vec to store instructions
 
     // println!("{:?}", sizeofvec);
     //  for i in binvec{
@@ -112,12 +125,12 @@ fn main() {
 
     let mut instrvec: Vec<&char> = Vec::new(); // new vec to store instructions
 
-    
+    let rest = &binvec[4..]; //gets the rest of vector
 
 
 
     
-    println!("{:?}\n",binvec );
+    println!("{:?}\n",rest );
 
 
 
