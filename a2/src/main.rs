@@ -78,10 +78,18 @@ pub enum Binop {
     Lt,  //Returns true if one i32 is less than another, otherwise false
     Eq,  //Returns true if one i32 is equal another, otherwise false
 }
-
-// fn FromBin()->{
-
+//need to reverse this to FromBin
+// trait ToBin{
+//     fn to_bin(self: &self)->Vec<u8>;
 // }
+// impl ToBin for u32{
+//     fn to_bin(self: &self)->Vec<u8>{
+//         let v = vec![0,0,0,0];
+//         ByteOrder::write_u32(v, self);
+//     }
+// }
+// <u32 as ToBin>::to_bin();//how to call it
+// Instr::to_bin();//how to call Val, Binop, Unop
 
 fn main() {
 
