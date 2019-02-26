@@ -13,6 +13,7 @@ use std::io::prelude::*;
 use std::io;
 use std::io::BufReader;
 use std::io::BufRead;
+use std::slice;
 
 
 type Address = usize;
@@ -91,10 +92,17 @@ fn main() {
 
     file.read_to_string(&mut string).unwrap();
 
-    let mut sizeofvec = binvec[3];
+   // let mut sizeofvec = binvec[3];
 
     let mut instrvec: Vec<&Instr> = Vec::new(); // new vec to store instructions
 
+    // println!("{:?}", sizeofvec);
+    for i in binvec.chunks_exact_mut(4){
+        //let mut collect_vect: Vec<u8> = (&binvec[0]..&binvec[3]).collect();
+        //let mut chun = i.unwrap();
+
+        println!("{:?}", i);
+    }
 
     //println!("vec_of_chars: {:?}", vec_of_chars);
 
