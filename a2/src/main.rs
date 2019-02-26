@@ -1,8 +1,8 @@
-// Partnered with Jacob Mulligan
+// Partnered with Jacob Mulligan & Alexa Hong
 /*
 TASKS
-1. Read in Binary File
-2. Convert Binary to Instr
+1. Read in Binary File (check)
+2. Convert Binary to Instr 
 3. Implement Exec loop ( switch dispatch)
 4. print last item in stack to stdout
 */
@@ -112,6 +112,7 @@ fn main() {
 
 
 
+    
     println!("{:?}\n",binvec );
 
 
