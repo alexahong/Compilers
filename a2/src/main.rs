@@ -85,30 +85,20 @@ fn main() {
 	let mut string = String::new(); // string of what is in the .s file
     let mut file = File::open("applam.o").expect("file did not open");
     
-    //file.read_to_string(&mut string);
-    // let mut buf = [0u8;12];
-    // file.read(&mut buf).unwrap();
-    let mut buf: Vec<u8> = Vec::new();
-    //let mut buf = Vec::new();
-    file.read_to_end(&mut buf).unwrap();
+   
+    let mut binvec: Vec<u8> = Vec::new(); // values from .o file 
+    file.read_to_end(&mut binvec).unwrap();
 
     file.read_to_string(&mut string).unwrap();
 
-    let mut sizeofvec = buf[3];
+    let mut sizeofvec = binvec[3];
 
-    let mut v1: Vec<&str> = Vec::new();
-    let mut v1 = [;sizeofvec]; 
+    let mut instrvec: Vec<&Instr> = Vec::new(); // new vec to store instructions
 
 
-    println!("{:?}", sizeofvec);
-    println!("{:?}", v1);
 
-    //let mut reader = BufReader::new(file);
+    
 
-   // println!("{:?}", string);
-   // let v1: Vec<&str> = string.lines().collect();// reads in the file into a str vector
-    let mut v2: Vec<&str> = Vec::new(); 
-   // let mut v2: Vec<&str> = string.split_whitespace().collect();
 
 
 }
