@@ -6,7 +6,7 @@ TASKS
 3. Implement Exec loop ( switch dispatch)
 4. print last item in stack to stdout
 */
-
+//use std::env;
 use std::fs::File;
 use std::io::Read;
 use std::io::prelude::*;
@@ -79,30 +79,34 @@ pub enum Binop {
     Eq,  //Returns true if one i32 is equal another, otherwise false
 }
 
+// fn FromBin()->{
+
+// }
+
 fn main() {
 
-
+    
+    //let args: Vec<String> = env::args().collect();
 
 	let mut string = String::new(); // string of what is in the .s file
     let mut file = File::open("applam.o").expect("file did not open");
-    
+    //let buf = fs::read(&args[1])?; //if ? doesn't work use unwrap()
    
     let mut binvec: Vec<u8> = Vec::new(); // values from .o file 
     file.read_to_end(&mut binvec).unwrap();
 
-    file.read_to_string(&mut string).unwrap();
+    //file.read_to_string(&mut string).unwrap();
 
    // let mut sizeofvec = binvec[3];
-
-    let mut instrvec: Vec<&Instr> = Vec::new(); // new vec to store instructions
+    let b = &binvec[0..4];//vector gets the first for bytes for size of 
+    println!("{:?}", b[3]);//b is a u8 and needs to be a usize
+    
+    let mut instrvec: Vec<&Instr> = Vec::capacity(b); // new vec to store instructions
 
     // println!("{:?}", sizeofvec);
-    for i in binvec.chunks_exact_mut(4){
-        //let mut collect_vect: Vec<u8> = (&binvec[0]..&binvec[3]).collect();
-        //let mut chun = i.unwrap();
-
-        println!("{:?}", i);
-    }
+    //  for i in binvec{
+       
+    // }
 
     //println!("vec_of_chars: {:?}", vec_of_chars);
 
