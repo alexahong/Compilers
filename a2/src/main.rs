@@ -84,15 +84,15 @@ pub enum Binop {
 }
 //need to reverse this to FromBin
 
-// trait FromBin{
-//     fn from_bin(self: &self)->Vec<u8>;
-// }
-// impl FromBin for u32{
-//     fn from_bin(self: &self)->Vec<u8>{
-//         let v = vec![0,0,0,0];
-//         ByteOrder::read_u32(v);
-//     }
-// }
+trait FromBin{
+    fn from_bin(self)->Vec<u8>;
+}
+impl FromBin for u32{
+    fn from_bin(self)->Vec<u8>{
+        // let v = vec![0,0,0,0];
+        // v.read_u32::<BigEndian>(v).unwrap();
+    }
+}
 // <u32 as ToBin>::to_bin();//how to call it
 // Instr::to_bin();//how to call Val, Binop, Unop
 
