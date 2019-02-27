@@ -10,7 +10,6 @@ TASKS
 extern crate byteorder;
 use std::io::Cursor;
 use byteorder::{BigEndian, ReadBytesExt};
-
 use std::fs::File;
 use std::io::Read;
 use std::io::prelude::*;
@@ -89,12 +88,11 @@ trait FromBin{
 }
 impl FromBin for u32{
     fn from_bin(self)->Vec<u8>{
-        // let v = vec![0,0,0,0];
-        // v.read_u32::<BigEndian>(v).unwrap();
+        let mut value : u8;
+        value.read_u32::<BigEndian>(v).unwrap();
     }
 }
-// <u32 as ToBin>::to_bin();//how to call it
-// Instr::to_bin();//how to call Val, Binop, Unop
+
 
 fn main() {
 
@@ -128,7 +126,8 @@ fn main() {
     let rest = &binvec[4..]; //gets the rest of vector
 
 
-
+    <u32 as FromBin>::from_bin();//how to call it
+    Instr::from_bin();//how to call Val, Binop, Unop
     
     println!("{:?}\n",rest );
 
