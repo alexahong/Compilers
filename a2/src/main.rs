@@ -9,13 +9,19 @@ TASKS
 //use std::env;
 extern crate byteorder;
 use std::io::Cursor;
+<<<<<<< HEAD
 use byteorder::{BigEndian, ReadBytesExt};
+=======
+use byteorder::{ByteOrder, BigEndian, ReadBytesExt};
+
+>>>>>>> 5ea0583c1a8335c45eb098473fff1af0e7f7884c
 use std::fs::File;
 use std::io::Read;
 use std::io::prelude::*;
 use std::io;
 use std::io::BufReader;
 use std::io::BufRead;
+use std::fs::read;
 use std::slice;
 
 
@@ -84,12 +90,13 @@ pub enum Binop {
 //need to reverse this to FromBin
 
 trait FromBin{
-    fn from_bin(self)->Vec<u8>;
+    fn from_bin(v: Vec<u8>)-> Self;
 }
 impl FromBin for u32{
-    fn from_bin(self)->Vec<u8>{
-        let mut value : u8;
-        value.read_u32::<BigEndian>(v).unwrap();
+    fn from_bin(v: Vec<u8>)->Self{
+        //let mut value = vec![0,0,0,0];
+        ByteOrder::v.read_u32(self).unwrap();
+
     }
 }
 
@@ -111,7 +118,7 @@ fn main() {
     let mut sizeofvec = binvec[3];
     let b = &binvec[0..4];//vector gets the first for bytes for size of 
     println!("{:?}", b);//b is a u8 and needs to be a usize
-    
+   
    // let mut instrvec: Vec<&Instr> = Vec::capacity(b); // new vec to store instructions
 
     // println!("{:?}", sizeofvec);
@@ -123,13 +130,13 @@ fn main() {
 
     let mut instrvec: Vec<&char> = Vec::new(); // new vec to store instructions
 
-    let rest = &binvec[4..]; //gets the rest of vector
+    let mut rest = &binvec[4..]; //gets the rest of vector
 
 
-    <u32 as FromBin>::from_bin();//how to call it
-    Instr::from_bin();//how to call Val, Binop, Unop
+    let prog_len = <u32 as FromBin>::from_bin(b);
+
     
-    println!("{:?}\n",rest );
+    println!("{:?}\n",prog_len);
 
 
 
