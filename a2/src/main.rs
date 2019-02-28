@@ -17,8 +17,7 @@ use std::io;
 use std::io::BufReader;
 use std::io::BufRead;
 use std::fs::read;
-use std::slice;
-
+use std::slice::Iter;
 
 
 type Address = usize;
@@ -93,100 +92,25 @@ pub trait FromBin
 
 impl FromBin for u32
 {
-    fn from_bin(v: Vec<u8>)-> u32
+    fn from_bin(binary: &mut Iter<u8>)-> u32
 
     {
-        
-       byteorder::BigEndian::read_u32(&v)
+        for j in binary.iter_mut(){
+            match 
+        }
+       //BigEndian::read_u32(&v)
 
 
     }
+    
+    
 }
-
-// impl FromBin for Unop
-// {
-//     fn from_bin(v: Vec<u8>)-> Unop
-
-//     {
-        
-//        byteorder::BigEndian::Instr::Unary(v);
-
-
+// impl FromBin for Unary{
+//     fn from_bin(self) -> Unop{
+//         Instr::Unop::Neg
 //     }
 // }
 
-
-// fn run(s: &mut State, prog: &[Instr]) {
-//     'mainloop:loop { 
-//         match prog[s.pc].clone() 
-//         {
-//             Instr::Push(i) => {
-//                 s.rb[rdst] = i;
-//                 s.pc = s.pc + 1
-//             },
-//             Instr::Pop => {
-//                 s.rb[rdst] = s.rb[rsrc];
-//                 s.pc = s.pc + 1
-//             },
-//             Instr::Peek(lbl) => {
-//                 if s.rb[Reg::ACC] == 1 { s.pc = lbl }
-//                 else { s.pc = s.pc + 1 }
-//             },
-//             Instr::Unary(rsrc) => {
-//                 if s.rb[rsrc] == s.rb[rdst.clone()] { s.rb[rdst] = 1 }
-//                 else { s.rb[rdst] = 0 };
-//                 s.pc = s.pc + 1
-//             },
-//             Instr::Binary(rdst, rsrc) => {
-//                 s.rb[rdst] = s.rb[rdst.clone()] - s.rb[rsrc];
-//                 s.pc = s.pc + 1
-//             },
-//             Instr::Swap => {
-//                 s.rb[rdst] = s.rb[rdst.clone()] * s.rb[rsrc];                
-//                 s.pc = s.pc + 1
-//             },
-//             Instr::Alloc => {
-//                 s.rb[rdst] = s.rb[rdst.clone()] * s.rb[rsrc];                
-//                 s.pc = s.pc + 1
-//             },
-//             Instr::Set => {
-//                 s.rb[rdst] = s.rb[rdst.clone()] * s.rb[rsrc];                
-//                 s.pc = s.pc + 1
-//             },
-//             Instr::Get => {
-//                 s.rb[rdst] = s.rb[rdst.clone()] * s.rb[rsrc];                
-//                 s.pc = s.pc + 1
-//             },
-//             Instr::Var(u32) => {
-//                 s.rb[rdst] = s.rb[rdst.clone()] * s.rb[rsrc];                
-//                 s.pc = s.pc + 1
-//             },
-//             Instr::Store(u32) => {
-//                 s.rb[rdst] = s.rb[rdst.clone()] * s.rb[rsrc];                
-//                 s.pc = s.pc + 1
-//             },
-//             Instr::SetFrame(u32) => {
-//                 s.rb[rdst] = s.rb[rdst.clone()] * s.rb[rsrc];                
-//                 s.pc = s.pc + 1
-//             },
-//             Instr::Call => {
-//                 s.rb[rdst] = s.rb[rdst.clone()] * s.rb[rsrc];                
-//                 s.pc = s.pc + 1
-//             },
-//             Instr::Ret => {
-//                 s.rb[rdst] = s.rb[rdst.clone()] * s.rb[rsrc];                
-//                 s.pc = s.pc + 1
-//             },
-//             Instr::Branch => {
-//                 s.rb[rdst] = s.rb[rdst.clone()] * s.rb[rsrc];                
-//                 s.pc = s.pc + 1
-//             },
-
-//             Instr::Hlt => break 'mainloop
-//         };
-//         println!("{}, next instr = {:?}", show_state(&s), prog[s.pc])        
-//     }
-// }
 
 
 
@@ -215,20 +139,23 @@ fn main() {
        
     // }
 
-    println!("vec_of_chars: {:?}", binvec);
+    //println!("vec_of_chars: {:?}", vec_of_chars);
 
-    let mut instrvec: Vec<&char> = Vec::new(); // new vec to store instructions
+    
 
     let mut rest = &binvec[4..]; //gets the rest of vector
     let mut five = &binvec[8..12]; //gets the rest of vector
     println!("{:?}", five);
 
 
-    let thirtytwo = <u32 as FromBin>::from_bin(five.to_vec());//how to call it
+    let prog_len = <u32 as FromBin>::from_bin(five.to_vec());//how to call it
 
-   // let unops = <Unop as FromBin>::from_bin(five.to_vec());//how to call it
+    for i in binvec{
+        
+    }
 
-    //println!("this is what im looking for: {:?}\n",unops);
+    
+    println!("this is what im looking for: {:?}\n",prog_len);
 
 
 
