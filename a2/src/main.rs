@@ -20,6 +20,7 @@ use std::fs::read;
 use std::slice;
 
 
+
 type Address = usize;
 
 
@@ -96,83 +97,96 @@ impl FromBin for u32
 
     {
         
-       BigEndian::read_u32(&v)
+       byteorder::BigEndian::read_u32(&v)
 
 
     }
 }
 
-fn run(s: &mut State, prog: &[Instr]) {
-    'mainloop:loop { 
-        match prog[s.pc].clone() 
-        {
-            Instr::Push(i) => {
-                s.rb[rdst] = i;
-                s.pc = s.pc + 1
-            },
-            Instr::Pop => {
-                s.rb[rdst] = s.rb[rsrc];
-                s.pc = s.pc + 1
-            },
-            Instr::Peek(lbl) => {
-                if s.rb[Reg::ACC] == 1 { s.pc = lbl }
-                else { s.pc = s.pc + 1 }
-            },
-            Instr::Unary(rsrc) => {
-                if s.rb[rsrc] == s.rb[rdst.clone()] { s.rb[rdst] = 1 }
-                else { s.rb[rdst] = 0 };
-                s.pc = s.pc + 1
-            },
-            Instr::Binary(rdst, rsrc) => {
-                s.rb[rdst] = s.rb[rdst.clone()] - s.rb[rsrc];
-                s.pc = s.pc + 1
-            },
-            Instr::Swap => {
-                s.rb[rdst] = s.rb[rdst.clone()] * s.rb[rsrc];                
-                s.pc = s.pc + 1
-            },
-               Instr::Alloc => {
-                s.rb[rdst] = s.rb[rdst.clone()] * s.rb[rsrc];                
-                s.pc = s.pc + 1
-            },
-                Instr::Set => {
-                s.rb[rdst] = s.rb[rdst.clone()] * s.rb[rsrc];                
-                s.pc = s.pc + 1
-            },
-                Instr::Get => {
-                s.rb[rdst] = s.rb[rdst.clone()] * s.rb[rsrc];                
-                s.pc = s.pc + 1
-            },
-                Instr::Var(u32) => {
-                s.rb[rdst] = s.rb[rdst.clone()] * s.rb[rsrc];                
-                s.pc = s.pc + 1
-            },
-                Instr::Store(u32) => {
-                s.rb[rdst] = s.rb[rdst.clone()] * s.rb[rsrc];                
-                s.pc = s.pc + 1
-            },
-                Instr::SetFrame(u32) => {
-                s.rb[rdst] = s.rb[rdst.clone()] * s.rb[rsrc];                
-                s.pc = s.pc + 1
-            },
-                Instr::Call => {
-                s.rb[rdst] = s.rb[rdst.clone()] * s.rb[rsrc];                
-                s.pc = s.pc + 1
-            },
-                Instr::Ret => {
-                s.rb[rdst] = s.rb[rdst.clone()] * s.rb[rsrc];                
-                s.pc = s.pc + 1
-            },
-                Instr::Branch => {
-                s.rb[rdst] = s.rb[rdst.clone()] * s.rb[rsrc];                
-                s.pc = s.pc + 1
-            },
+// impl FromBin for Unop
+// {
+//     fn from_bin(v: Vec<u8>)-> Unop
 
-            Instr::Hlt => break 'mainloop
-        };
-        println!("{}, next instr = {:?}", show_state(&s), prog[s.pc])        
-    }
-}
+//     {
+        
+//        byteorder::BigEndian::Instr::Unary(v);
+
+
+//     }
+// }
+
+
+// fn run(s: &mut State, prog: &[Instr]) {
+//     'mainloop:loop { 
+//         match prog[s.pc].clone() 
+//         {
+//             Instr::Push(i) => {
+//                 s.rb[rdst] = i;
+//                 s.pc = s.pc + 1
+//             },
+//             Instr::Pop => {
+//                 s.rb[rdst] = s.rb[rsrc];
+//                 s.pc = s.pc + 1
+//             },
+//             Instr::Peek(lbl) => {
+//                 if s.rb[Reg::ACC] == 1 { s.pc = lbl }
+//                 else { s.pc = s.pc + 1 }
+//             },
+//             Instr::Unary(rsrc) => {
+//                 if s.rb[rsrc] == s.rb[rdst.clone()] { s.rb[rdst] = 1 }
+//                 else { s.rb[rdst] = 0 };
+//                 s.pc = s.pc + 1
+//             },
+//             Instr::Binary(rdst, rsrc) => {
+//                 s.rb[rdst] = s.rb[rdst.clone()] - s.rb[rsrc];
+//                 s.pc = s.pc + 1
+//             },
+//             Instr::Swap => {
+//                 s.rb[rdst] = s.rb[rdst.clone()] * s.rb[rsrc];                
+//                 s.pc = s.pc + 1
+//             },
+//             Instr::Alloc => {
+//                 s.rb[rdst] = s.rb[rdst.clone()] * s.rb[rsrc];                
+//                 s.pc = s.pc + 1
+//             },
+//             Instr::Set => {
+//                 s.rb[rdst] = s.rb[rdst.clone()] * s.rb[rsrc];                
+//                 s.pc = s.pc + 1
+//             },
+//             Instr::Get => {
+//                 s.rb[rdst] = s.rb[rdst.clone()] * s.rb[rsrc];                
+//                 s.pc = s.pc + 1
+//             },
+//             Instr::Var(u32) => {
+//                 s.rb[rdst] = s.rb[rdst.clone()] * s.rb[rsrc];                
+//                 s.pc = s.pc + 1
+//             },
+//             Instr::Store(u32) => {
+//                 s.rb[rdst] = s.rb[rdst.clone()] * s.rb[rsrc];                
+//                 s.pc = s.pc + 1
+//             },
+//             Instr::SetFrame(u32) => {
+//                 s.rb[rdst] = s.rb[rdst.clone()] * s.rb[rsrc];                
+//                 s.pc = s.pc + 1
+//             },
+//             Instr::Call => {
+//                 s.rb[rdst] = s.rb[rdst.clone()] * s.rb[rsrc];                
+//                 s.pc = s.pc + 1
+//             },
+//             Instr::Ret => {
+//                 s.rb[rdst] = s.rb[rdst.clone()] * s.rb[rsrc];                
+//                 s.pc = s.pc + 1
+//             },
+//             Instr::Branch => {
+//                 s.rb[rdst] = s.rb[rdst.clone()] * s.rb[rsrc];                
+//                 s.pc = s.pc + 1
+//             },
+
+//             Instr::Hlt => break 'mainloop
+//         };
+//         println!("{}, next instr = {:?}", show_state(&s), prog[s.pc])        
+//     }
+// }
 
 
 
@@ -201,7 +215,7 @@ fn main() {
        
     // }
 
-    //println!("vec_of_chars: {:?}", vec_of_chars);
+    println!("vec_of_chars: {:?}", binvec);
 
     let mut instrvec: Vec<&char> = Vec::new(); // new vec to store instructions
 
@@ -210,10 +224,11 @@ fn main() {
     println!("{:?}", five);
 
 
-    let prog_len = <u32 as FromBin>::from_bin(five.to_vec());//how to call it
+    let thirtytwo = <u32 as FromBin>::from_bin(five.to_vec());//how to call it
 
-    
-    println!("this is what im looking for: {:?}\n",prog_len);
+   // let unops = <Unop as FromBin>::from_bin(five.to_vec());//how to call it
+
+    //println!("this is what im looking for: {:?}\n",unops);
 
 
 
