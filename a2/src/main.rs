@@ -130,61 +130,80 @@ fn main() {
     //file.read_to_string(&mut string).unwrap();
 
     let mut sizeofvec = binvec[3] as usize;
+   // println!("size: {:?}", sizeofvec );
     let mut b = &binvec[0..4];//vector gets the first for bytes for size of 
     //println!("{:?}", b);//b is a u8 and needs to be a usize
    
-    let mut instrvec: Vec<&Instr> = Vec::with_capacity(sizeofvec); // new vec to store instructions
+    let mut instrvec: Vec<Instr> = Vec::with_capacity(sizeofvec); // new vec to store instructions
 
-    // println!("{:?}", sizeofvec);
+    let mut vec = instrvec;
     //  for i in binvec{
        
     // }
 
     //println!("vec_of_chars: {:?}", vec_of_chars);
 
-    
 
     let mut rest = &binvec[4..]; //gets the rest of vector
     let mut five = &binvec[8..12]; //gets the rest of vector
     //println!("{:?}", five);
-    let mut m = 0;
+    let mut m = 0; 
+
 
    // let prog_len = <u32 as FromBin>::from_bin(five.to_vec());//how to call it
 
-    for i in 4..binvec.len(){
-        if m > 0{
-            m = m -1;
+    for i in 4..binvec.len()
+    {
+        if m > 0
+        {
+            m = m - 1;
         }
         else{
             //println!("{:?}", i);
-            match binvec[i]{
-                0 => {// push
-                    match binvec[i]{
-                        0 => {//vunit
-                            //i = i + 1;
-                            m = m + 1;
-                            instrvec.push(&Instr::Push(Val::Vunit));
-                        },
-                        1 => {//vi32
-                           // i = i + 1;
-                            m = m + 1;
-                            instrvec.push(&Instr::Push(Val::Vi32(binvec[i] as i32)));
-                        },
-                        2 => {//vbooltrue
+                            println!("this is the first value {:?}",binvec[i]);
 
-                        },
-                        3 =>{//vboolfalse
+            match binvec[i]
+            {
 
-                        },
-                        4 => {//Vloc u32
-                            
-                        },
-                        5 => {//Vundef
+                11 =>
+                {
+                    m = m + 1;
+                    println!("m value{:?}", m);
+                    println!(" i value {:?}",i );
+                    vec.push(Instr::SetFrame(binvec[i] as u32));
+                    println!("inside of vec{:?}", vec);
 
-                        },
-                        _ => panic!("oh no"),    
-                    }
+
                 },
+                // 0 => {// push
+                //     match binvec[i]{
+                //         0 => {//vunit
+                //             //i = i + 1;
+                //             m = m + 1;
+                //            vec.push(&Instr::Push(Val::Vunit));
+                //         },
+                //         1 => {//vi32
+                //            // i = i + 1;
+                //             m = m + 1;
+                //             vec.push(&Instr::Push(Val::Vi32(binvec[i] as i32)));
+                //         },
+                //         2 => {//vbooltrue
+
+                //         },
+                //         3 =>{//vboolfalse
+
+                //         },
+                //         4 => {//Vloc u32, Label
+                            
+                //         },
+                //         5 => {//Vundef
+
+                //         },
+                //         _ => panic!("oh no"),    
+                //     }
+
+                _ => panic!("oh no"),  
+                }
 
             }//end of match1
         }//end of else
@@ -197,4 +216,4 @@ fn main() {
 
 
 
-}
+//}
