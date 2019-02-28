@@ -121,7 +121,7 @@ fn main() {
     //let args: Vec<String> = env::args().collect();
 
 	let mut string = String::new(); // string of what is in the .s file
-    let mut file = File::open("applam.o").expect("file did not open");
+    let mut file = File::open("multi-arg.o").expect("file did not open");
     //let buf = fs::read(&args[1])?; //if ? doesn't work use unwrap()
    
     let mut binvec: Vec<u8> = Vec::new(); // values from .o file 
@@ -170,7 +170,11 @@ fn main() {
                     m = m + 1;
                     println!("m value{:?}", m);
                     println!(" i value {:?}",i );
-                    vec.push(Instr::SetFrame(binvec[i] as u32));
+                    let set = &binvec[i+1..i+5];
+                    println!("{:?}", set);
+                    let B = BigEndian::read_u32(&set);
+                    println!("{:?}", B);
+                    vec.push(Instr::SetFrame(B));
                     println!("inside of vec{:?}", vec);
 
 
