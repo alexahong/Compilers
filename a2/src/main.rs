@@ -126,7 +126,7 @@ fn main() {
    
     let mut binvec: Vec<u8> = Vec::new(); // values from .o file 
     file.read_to_end(&mut binvec).unwrap();
-
+println!("bin vec{:?}", binvec );
     //file.read_to_string(&mut string).unwrap();
 
     let mut sizeofvec = binvec[3] as usize;
@@ -152,7 +152,7 @@ fn main() {
 
    // let prog_len = <u32 as FromBin>::from_bin(five.to_vec());//how to call it
 
-    for i in 4..binvec.len()
+    for i in 4..binvec.len() // i is the location in the binary vec, and binvec.len() is the total elements in binvec
     {
         if m > 0
         {
@@ -170,6 +170,8 @@ fn main() {
                     m = m + 1;
                     println!("m value{:?}", m);
                     println!(" i value {:?}",i );
+
+                    //let value = binvec[i];
                     vec.push(Instr::SetFrame(binvec[i] as u32));
                     println!("inside of vec{:?}", vec);
 
