@@ -1,3 +1,6 @@
 # Compilers
 
-Alexa Hong and Jacob Mulligan
+Partners: Alexa Hong and Jacob Mulligan
+
+Alexa: I worked on implementing from_bin and getting the instructions into a vector.
+Jacob: I worked on implementing the execution loop to get the correct value output.
