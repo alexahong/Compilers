@@ -1,1 +1,1 @@
-/Users/alexahong/Desktop/Compilers/Compilers/a2/target/release/a2.dSYM: /Users/alexahong/Desktop/Compilers/Compilers/a2/src/main.rs
+/mnt/c/Users/Mulli/Documents/CS4100/Compilers/a2/target/release/a2: /mnt/c/Users/Mulli/Documents/CS4100/Compilers/a2/src/main.rs

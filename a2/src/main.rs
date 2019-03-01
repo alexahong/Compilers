@@ -23,11 +23,11 @@ type Address = usize;
 #[derive(Debug,Clone)]
 pub struct State {
     pub halt: bool, //Has the machine halted?
-    pub pc: u32, //The current program counter, a 32-bit unsigned integer
+    pub pc: u32, //The current prog counter, a 32-bit unsigned integer
     pub fp: u32, //The current frame pointer
     pub stack: Vec<Val>, //The stack, with maximum size STACK_SIZE
     pub heap: Vec<Val>, //The heap
-    pub program: Vec<Instr> //The program being executed, a list of instructions
+    pub program: Vec<Instr> //The prog being executed, a list of instructions
 }
 
 #[derive(Debug,Clone,PartialEq)]
@@ -221,6 +221,106 @@ impl FromBin for Instr
     }
 }
 
+pub enum Debug {
+    DEBUG,
+    NODEBUG
+}
+// pub fn exec(d: &Debug, s: &mut State) {
+//     'mainloop:loop {
+//         if s.halt { break 'mainloop }
+//         let pc = s.pc;
+//         s.pc = pc + 1;
+//         if pc >= s.prog.len() {
+//             panic!("exec: pc out of bounds")
+//         }
+//         let i = &s.prog[pc].clone();
+//         instr(i, s);
+//     }
+//     match d {
+//         Debug::DEBUG => {
+//             println!("{:?}", s)
+//         },
+//         Debug::NODEBUG => ()
+//     }
+//}
+// fn run(s: &mut State, prog: &[Instr]) {
+//     'mainloop:loop { 
+//         if s.halt{break 'mainloop}
+//         let mut pc = s.pc;
+//         s.pc = pc + 1;
+//         println!("{:?}", s.prog.len() );
+//         println!("{:?}", pc);
+//         if pc >= s.prog.len() as u32{
+//             panic!("pc is out to bounds");
+//         }
+//         let i : &Instr = &s.prog[pc as usize].clone();
+//         match i {
+//             Instr::Push(val) => {
+//                 //pc = pc+1;
+//                 match val{
+//                     Val::Vunit => {//The unit value
+//                         s.stack.push(Val::Vunit);
+//                         pc = pc+1;
+//                     },          
+//                     Val::Vi32(num) => s.stack.push(Val::Vi32(*num)),      //32-bit signed integers
+//                     Val::Vbool(boolean) => s.stack.push(Val::Vbool(*boolean)),      //Booleans
+//                     Val::Vloc(num)=> s.stack.push(Val::Vloc(*num)),      //Stack or instruction locations
+//                     Val::Vundef => s.stack.push(Val::Vundef),          //The unit value  
+//                     Val::Vsize(num) => s.stack.push(Val::Vsize(*num)),
+//                     Val::Vaddr(ad) => s.stack.push(Val::Vaddr(*ad)),
+
+//                 }
+                
+
+//             },
+//             Instr::Pop => {
+                
+//             },
+//             Instr::Peek(u32) => {
+               
+//             },
+//             Instr::Unary(Unop)=> {
+                
+//             },
+//             Instr::Binary(Binop) => {
+                
+//             },
+//             Instr::Swap => {
+                
+//             },
+//             Instr::Alloc => {
+
+//             },
+//             Instr::Set => {
+
+//             },
+//             Instr::Get => {
+
+//             },
+//             Instr::Var(u32) => {
+
+//             },
+//             Instr::Store(u32) => {
+
+//             },
+//             Instr::SetFrame(u32) => {
+
+//             },
+//             Instr::Call => {
+
+//             },
+//             Instr::Ret => {
+
+//             },
+//             Instr::Branch => {
+
+//             },
+//             Instr::Halt => s.halt = true,
+//         };
+//        // println!("{}, next instr = {:?}", show_state(&s), prog[s.pc])        
+//     }
+// }
+
 
 fn main() {
 
@@ -231,23 +331,142 @@ fn main() {
 
 
     let mut binvec: Vec<u8> = fs::read(file).unwrap(); // values from .o file 
-    let mut instrvec: Vec<Instr> = Vec::new();// new vec to store instructions
+    let mut prog: Vec<Instr> = Vec::new();// new vec to store instructions
     let mut byte_iterator = binvec.iter();
     let prog_len = <u32 as FromBin>::from_bin(byte_iterator.by_ref()); // first 4 bytes
     
+   
     for i in 0..prog_len
     {
 
-        instrvec.push(Instr::from_bin(byte_iterator.by_ref()));
-
+     prog.push(Instr::from_bin(byte_iterator.by_ref()));//pushes list of instr
+    //println!("{:?}", byte_iterator.by_ref());
 
     }
+    println!("{:?}", prog);
+    //run(&mut init_state,  &prog);// execution loop
+     let mut s = State{halt: false, pc:0, fp:0, stack: Vec::new(), heap: Vec::new(), program: prog};
+    'mainloop:loop { 
+        if s.halt{break 'mainloop}
+        let mut pc = s.pc;
+        s.pc = pc + 1;
+        println!("{:?}", s.program.len() );
+        println!("{:?}", pc);
+        println!("stack val{:?}", s.stack);
+        if pc >= s.program.len() as u32{
+            panic!("pc is out to bounds");
+        }
+        let i : &Instr = &s.program[pc as usize].clone();
+        match i {
+            Instr::Push(val) => {
+                //pc = pc+1;
+                match val{
+                    Val::Vunit => {//The unit value
+                        s.stack.push(Val::Vunit);
+                        s.pc = s.pc+1;
+                    },          
+                    Val::Vi32(num) => {
+                        s.stack.push(Val::Vi32(*num));      //32-bit signed integers
+                        s.pc = s.pc+1;
+                    },
+                    Val::Vbool(boolean) =>{ 
+                        s.stack.push(Val::Vbool(*boolean));      //Booleans
+                        s.pc = s.pc+1;
+                    },
+                    Val::Vloc(num)=> {
+                        s.stack.push(Val::Vloc(*num));      //Stack or instruction locations
+                        s.pc = s.pc + 1;
+                    },
+                    Val::Vundef => {
+                        s.stack.push(Val::Vundef);          //The unit value
+                        s.pc = s.pc+1;  
+                    },
+                    Val::Vsize(num) => {
+                        s.stack.push(Val::Vsize(*num));
+                        s.pc = s.pc+1;
+                    },
+                    Val::Vaddr(ad) => {
+                        s.stack.push(Val::Vaddr(*ad));
+                        s.pc = s.pc +1;
+                    },
 
+                }
+                
 
-    for p in instrvec
-    {
-         println!("{:?}",p );
+            },
+            Instr::Pop => {
+                s.stack.pop();
+                s.pc = s.pc +1;
+            },
+            Instr::Peek(num32) => {
+               
+            },
+            Instr::Unary(U)=> {
+                Unop::Neg;
+                
+            },
+            Instr::Binary(Bin) => {
+                match Bin {
+                    Binop::Add =>{
+                        
+                    },
+                    Binop::Sub =>{
+
+                    },
+                    Binop::Mul =>{
+
+                    },
+                    Binop::Div =>{
+
+                    },
+                    Binop::Lt =>{
+
+                    },
+                    Binop::Eq =>{
+
+                    },
+                }
+                
+            },
+            Instr::Swap => {
+                
+            },
+            Instr::Alloc => {
+
+            },
+            Instr::Set => {
+
+            },
+            Instr::Get => {
+
+            },
+            Instr::Var(u32) => {
+
+            },
+            Instr::Store(u32) => {
+
+            },
+            Instr::SetFrame(u32) => {
+
+            },
+            Instr::Call => {
+
+            },
+            Instr::Ret => {
+
+            },
+            Instr::Branch => {
+
+            },
+            Instr::Halt => s.halt = true,
+        };
+       // println!("{}, next instr = {:?}", show_state(&s), prog[s.pc])        
     }
+
+    // for p in prog
+    // {
+    //      println!("{:?}",p );//prints list of instr
+    // }
 
 
 
