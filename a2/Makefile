@@ -1,5 +1,6 @@
 target/release/a2: src/main.rs
-	cargo build --release
+	target/debug/a2 $F
+		cargo build --release
 
 .PHONY: build
 
