@@ -408,22 +408,94 @@ fn main() {
             Instr::Binary(Bin) => {
                 match Bin {
                     Binop::Add =>{
-                        
+                        let x = s.stack.pop().unwrap();
+                        let y = s.stack.pop().unwrap();
+                        let mut x2 : i32 = 0;
+                        let mut y2 : i32 = 0;
+                        match x{
+                            Val::Vi32(num) => x2 =num,
+                            _ => panic!("didn't find Vi32"),
+                        }
+                        match y{
+                            Val::Vi32(num) => y2 =num,
+                            _ => panic!("didn't find Vi32"),
+                        }
+                        s.stack.push(Val::Vi32(x2 + y2));
                     },
                     Binop::Sub =>{
-
+                        let x = s.stack.pop().unwrap();
+                        let y = s.stack.pop().unwrap();
+                        let mut x2 : i32 = 0;
+                        let mut y2 : i32 = 0;
+                        match x{
+                            Val::Vi32(num) => x2 =num,
+                            _ => panic!("didn't find Vi32 sub"),
+                        }
+                        match y{
+                            Val::Vi32(num) => y2 =num,
+                            _ => panic!("didn't find Vi32 sub"),
+                        }
+                        s.stack.push(Val::Vi32(x2 - y2));
                     },
                     Binop::Mul =>{
-
+                        let x = s.stack.pop().unwrap();
+                        let y = s.stack.pop().unwrap();
+                        let mut x2 : i32 = 0;
+                        let mut y2 : i32 = 0;
+                        match x{
+                            Val::Vi32(num) => x2 =num,
+                            _ => panic!("didn't find Vi32 sub"),
+                        }
+                        match y{
+                            Val::Vi32(num) => y2 =num,
+                            _ => panic!("didn't find Vi32 sub"),
+                        }
+                        s.stack.push(Val::Vi32(x2 * y2));
                     },
                     Binop::Div =>{
-
+                        let x = s.stack.pop().unwrap();
+                        let y = s.stack.pop().unwrap();
+                        let mut x2 : i32 = 0;
+                        let mut y2 : i32 = 0;
+                        match x{
+                            Val::Vi32(num) => x2 =num,
+                            _ => panic!("didn't find Vi32 sub"),
+                        }
+                        match y{
+                            Val::Vi32(num) => y2 =num,
+                            _ => panic!("didn't find Vi32 sub"),
+                        }
+                        s.stack.push(Val::Vi32(x2 / y2));
                     },
                     Binop::Lt =>{
-
+                        let x = s.stack.pop().unwrap();
+                        let y = s.stack.pop().unwrap();
+                        let mut x2 : i32 = 0;
+                        let mut y2 : i32 = 0;
+                        match x{
+                            Val::Vi32(num) => x2 =num,
+                            _ => panic!("didn't find Vi32 sub"),
+                        }
+                        match y{
+                            Val::Vi32(num) => y2 =num,
+                            _ => panic!("didn't find Vi32 sub"),
+                        }
+                        s.stack.push(Val::Vbool(x2 > y2));
                     },
                     Binop::Eq =>{
-
+                        let x = s.stack.pop().unwrap();
+                        let y = s.stack.pop().unwrap();
+                        let mut x2 : i32 = 0;
+                        let mut y2 : i32 = 0;
+                        match x{
+                            Val::Vi32(num) => x2 =num,
+                            _ => panic!("didn't find Vi32 sub"),
+                        }
+                        match y{
+                            Val::Vi32(num) => y2 =num,
+                            _ => panic!("didn't find Vi32 sub"),
+                        }
+                        s.stack.push(Val::Vbool(x2 == y2));
                     },
                 }
                 
