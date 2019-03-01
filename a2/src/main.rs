@@ -113,71 +113,73 @@ pub enum Binop {
 
 trait FromBin 
 {
-    fn from_bin(binary: Iter<u8>) -> Self;
+    fn from_bin(binary:&mut Iter<u8>) -> Self;
 }
 
-// impl FromBin for i32 
-// {
-//     fn from_bin(binary: Iter<u8>) -> i32
-//     {
-//         // let my_self: i32 = *binary as i32;
-//          //let mut buf: Vec<u8> = [0, 0, 0, 0].to_vec();
-//         byteorder::BigEndian::read_i32(&binary)
-//        // buf
-//     }
-// }
+impl FromBin for i32 
+{
+    fn from_bin(binary:&mut Iter<u8>) -> i32
+    {
 
-// impl FromBin for u32 
-// {
-//     fn from_bin(binary: &mut Iter<u8>) -> u32
-//     {
-//         let my_self: u32 = *binary as u32;
-//         let mut buf: Vec<u8> = [0, 0, 0, 0].to_vec();
-//         BigEndian::read_u32(&mut buf);
-//         buf
-//     }
-// }
+        let mut buf: Vec<u8> = [0, 0, 0, 0].to_vec();
+        for x in 0..4 
+        {
+        buf.push(*binary.next().unwrap());
+    
+        }
+        BigEndian::read_i32(&buf)
+
+    }
+}
+
+impl FromBin for u32 
+{
+    fn from_bin(binary: &mut Iter<u8>) -> u32
+    {
+        let mut buf: Vec<u8> = [0, 0, 0, 0].to_vec();
+        for x in 0..4 
+        {
+        buf.push(*binary.next().unwrap());
+      
+        }
+        BigEndian::read_u32(&buf)
+
+    }
+}
+
 
 impl FromBin for Val 
 {
-    fn from_bin(mut binary: Iter<u8>) -> Val
+    fn from_bin(mut binary:&mut Iter<u8>) -> Val
     {
         let mut b = binary.next();
-        let vu = Some(vec![0b0000_0000]);
-        let vbt = Some(vec![0b0000_0010]);
-        let vbf = Some(vec![0b0000_0011]); 
-        let vdf = Some(vec![0b0000_0101]);
+        let vu = Some(vec![0b0000_0000]); // vunit
+        let vbt = Some(vec![0b0000_0010]); //vbooltrue
+        let vbf = Some(vec![0b0000_0011]); //vboolfalse
+        let vdf = Some(vec![0b0000_0101]); //vundef
+        let vi = Some(vec![0b0000_0001]); //vi32
+        let vl = Some(vec![0b0000_0100]); //vloc
+        let mut v1 : i32 = 0;
+        let mut v2 : u32 = 0;
 
         match b
         {
             vu => Val::Vunit,
-
-            // Vi32(i) => { let mut v = vec![0b0000_0001];
-            //     v.append(&mut<i32 as ToBin>::from_bin(i));
-            //     v},
-          // Vi32(<i32 as FromBin>::from_bin(binary),
-
+            vi => Val::Vi32(v1),
+            vl => Val::Vloc(v2),
             vbt => Val::Vbool(true),
             vbf => Val::Vbool(false),
-
-
-            // Vloc(i) => {let mut v = vec![0b0000_0100];
-            //     v.append(&mut<u32 as ToBin>::from_bin(i));
-            //     v},
-
             vdf => Val::Vundef,
-
-
             _       => panic!("ERROR: Vundef"),
         }
     }
 }
 
-#[test]
-fn test_val_from_bin() {
+fn test_val_from_bin() 
+{
     let v1 = vec![0];
-    let binary1 = v.iter();
-    assert_eq!(Val::from_bin(binary1), Val::Vunit);
+    let mut buf = v1.iter();
+    assert_eq!(Val::from_bin(&mut buf),Val::Vi32(20));
     // other test cases here
 }
 
@@ -262,8 +264,9 @@ println!("bin vec{:?}", binvec );
 
 
 
-    //let prog_len = <Val as FromBin>::from_bin(binvec);
-   // println!("bin vec{:?}", binvec );
+   let mut buf = binvec.iter();
+   let prog_len = <Val as FromBin>::from_bin(&mut buf);
+   println!("bin vec{:?}", prog_len);
 
    //  let mut sizeofvec = binvec[3] as usize;
    // // println!("size: {:?}", sizeofvec );
