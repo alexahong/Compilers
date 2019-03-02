@@ -13,6 +13,7 @@ use std::io::Read;
 use std::slice::Iter;
 extern crate byteorder;
 use byteorder::{ByteOrder, ReadBytesExt, BigEndian};
+use std::string::ToString;
 
 
 
@@ -225,24 +226,6 @@ pub enum Debug {
     DEBUG,
     NODEBUG
 }
-// pub fn exec(d: &Debug, s: &mut State) {
-//     'mainloop:loop {
-//         if s.halt { break 'mainloop }
-//         let pc = s.pc;
-//         s.pc = pc + 1;
-//         if pc >= s.prog.len() {
-//             panic!("exec: pc out of bounds")
-//         }
-//         let i = &s.prog[pc].clone();
-//         instr(i, s);
-//     }
-//     match d {
-//         Debug::DEBUG => {
-//             println!("{:?}", s)
-//         },
-//         Debug::NODEBUG => ()
-//     }
-//}
 
 
 
@@ -267,15 +250,15 @@ fn main() {
     //println!("{:?}", byte_iterator.by_ref());
 
     }
-    println!("{:?}", prog);
+    //println!("{:?}", prog);
     //run(&mut init_state,  &prog);// execution loop
      let mut s = State{halt: false, pc:0, fp:0, stack: Vec::new(), heap: Vec::new(), program: prog};
     'mainloop:loop { 
         if s.halt{break 'mainloop}
         let mut pc = s.pc;
         s.pc = pc + 1;
-        println!("{:?}", s.program.len() );
-        println!("{:?}", pc);
+        //println!("{:?}", s.program.len() );
+        //println!("{:?}", pc);
         
         if pc >= s.program.len() as u32{
             panic!("pc is out to bounds");
@@ -435,19 +418,77 @@ fn main() {
                 s.stack.push(v2);
             },
             Instr::Alloc => {
+                let mut init = s.stack.pop().unwrap();
+                let vsize = s.stack.pop().unwrap();
+                let mut size = 0;
+                match vsize{
+                    Val::Vi32(num) => {
+                        size = num;
+                    },
+                    _ => panic!("alloc panic"),
+                }
+                s.heap.push(Val::Vsize(size));
+                for i in 0..size{
+                    let init_clone = s.stack.pop().unwrap().clone();
+                    s.heap.push(init_clone);
+                }
 
             },
             Instr::Set => {
+                let add = s.stack.pop().unwrap();
+                let ind = s.stack.pop().unwrap();
+                let addr = s.stack.pop().unwrap();
 
+                match ind {
+                    Val::Vi32(num) =>{
+                        match addr {
+                            Val::Vaddr(base) => {
+                                s.heap.insert((num + (base as i32)+1) as usize, add);
+                            },
+                            _ => panic!("ohno"),
+                        }
+                        
+                    },
+                    _ => panic!("bad"),
+                }
             },
             Instr::Get => {
-
+                let mut vid = s.stack.pop().unwrap();
+                let mut ind = 0;
+                let vbase =s.stack.pop().unwrap();
+                let mut base = 0;
+                match vbase{
+                    Val::Vaddr(num) => {
+                        base = num as i32;
+                    },
+                    _ => panic!("panic in get"),
+                }
+                match vid{
+                    Val::Vi32(num) => {
+                        ind = num;
+                    },
+                    _ => panic!("panic"),
+                }
+                let sum = ind + base + 1;
+                let get = s.heap[sum as usize].clone();
+                s.stack.push(get);
             },
             Instr::Var(va) => {
-
+                if s.fp + va > s.stack.len() as u32{
+                    panic!("out of range");
+                }
+                else{
+                    s.stack.insert((s.fp + va) as usize, s.stack[(s.fp + *va) as usize].clone())
+                }
             },
             Instr::Store(st) => {
-
+                let vnew = st;
+                if s.fp + st > s.stack.len() as u32{
+                    panic!("out of range");
+                }
+                else{
+                    s.stack.insert(*vnew as usize, s.stack[s.fp as usize].clone());
+                }
             },
             Instr::SetFrame(vloc) => {
                 s.stack.push(Val::Vloc(*vloc));
@@ -455,7 +496,7 @@ fn main() {
             },
             Instr::Call => {
                 let target = s.stack.pop().unwrap();
-                println!("{:?}", target);
+                //println!("{:?}", target);
                 s.stack.push(Val::Vloc(s.pc));
                 match target {
                     Val::Vloc(loc) => s.pc = loc,
@@ -483,13 +524,33 @@ fn main() {
                 s.stack.push(vret);
             },
             Instr::Branch => {
+                let target = s.stack.pop().unwrap();
+                let arg = s.stack.pop().unwrap();
+
+                match arg{
+                    Val::Vbool(b) =>{
+                        if b{
+                            match target {
+                                Val::Vloc(num) => {
+                                    s.pc = num;
+                                },
+                                _ => panic!("oh no branch"),
+                            }
+                        }
+                    },
+                    _ => panic!("ohno"),
+                }
 
             },
             Instr::Halt => s.halt = true,
         }
        // println!("{}, next instr = {:?}", show_state(&s), prog[s.pc]) 
-       println!("stack val{:?}", s.stack);       
+             
     }
+    let mut output = s.stack.pop().unwrap();
+    //s.stack.read_to_string(&mut output);
+    //let output: String = s.stack.into_iter().map(|i| i.to_string()).collect::<String>();
+     print!("{:?}", output);
 
     // for p in prog
     // {
