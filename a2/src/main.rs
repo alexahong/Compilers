@@ -320,7 +320,7 @@ fn main() {
             },
             Instr::Pop => {
                 s.stack.pop().unwrap();
-                s.pc = s.pc +1;
+               // s.pc = s.pc +1;
             },
             Instr::Peek(num32) => {
                let v = s.stack[*num32 as usize].clone();
@@ -455,9 +455,11 @@ fn main() {
             },
             Instr::Call => {
                 let target = s.stack.pop().unwrap();
-                s.stack.push(Val::Vloc(pc));
+                println!("{:?}", target);
+                s.stack.push(Val::Vloc(s.pc));
                 match target {
                     Val::Vloc(loc) => s.pc = loc,
+                    //Val::
                     _ => panic!("oh no, no location"),
                 }
 
@@ -467,7 +469,6 @@ fn main() {
                 let cur_fp = s.fp;
                 let vret = s.stack.pop().unwrap();
                 let mut prev_pc = 0;
-                //println!("{:?}", vret);
                 match s.stack.pop().unwrap(){
                     Val::Vloc(num) =>{
                         prev_pc = num;
