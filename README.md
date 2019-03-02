@@ -4,6 +4,7 @@ Partners: Alexa Hong and Jacob Mulligan
 
 Alexa: I worked on implementing from_bin and getting the instructions into a vector.
 Jacob: I worked on implementing the execution loop to get the correct value output.
+<<<<<<< HEAD
 
 our program works by these steps
 1. Read in Binary File 
@@ -14,3 +15,4 @@ our program works by these steps
     with the Instructions we then ran our execution loop to match with each instruction and execute its operation
 4. print last item in stack to stdout
     print the last element on the stack
+
