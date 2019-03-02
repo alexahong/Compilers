@@ -243,83 +243,7 @@ pub enum Debug {
 //         Debug::NODEBUG => ()
 //     }
 //}
-// fn run(s: &mut State, prog: &[Instr]) {
-//     'mainloop:loop { 
-//         if s.halt{break 'mainloop}
-//         let mut pc = s.pc;
-//         s.pc = pc + 1;
-//         println!("{:?}", s.prog.len() );
-//         println!("{:?}", pc);
-//         if pc >= s.prog.len() as u32{
-//             panic!("pc is out to bounds");
-//         }
-//         let i : &Instr = &s.prog[pc as usize].clone();
-//         match i {
-//             Instr::Push(val) => {
-//                 //pc = pc+1;
-//                 match val{
-//                     Val::Vunit => {//The unit value
-//                         s.stack.push(Val::Vunit);
-//                         pc = pc+1;
-//                     },          
-//                     Val::Vi32(num) => s.stack.push(Val::Vi32(*num)),      //32-bit signed integers
-//                     Val::Vbool(boolean) => s.stack.push(Val::Vbool(*boolean)),      //Booleans
-//                     Val::Vloc(num)=> s.stack.push(Val::Vloc(*num)),      //Stack or instruction locations
-//                     Val::Vundef => s.stack.push(Val::Vundef),          //The unit value  
-//                     Val::Vsize(num) => s.stack.push(Val::Vsize(*num)),
-//                     Val::Vaddr(ad) => s.stack.push(Val::Vaddr(*ad)),
 
-//                 }
-                
-
-//             },
-//             Instr::Pop => {
-                
-//             },
-//             Instr::Peek(u32) => {
-               
-//             },
-//             Instr::Unary(Unop)=> {
-                
-//             },
-//             Instr::Binary(Binop) => {
-                
-//             },
-//             Instr::Swap => {
-                
-//             },
-//             Instr::Alloc => {
-
-//             },
-//             Instr::Set => {
-
-//             },
-//             Instr::Get => {
-
-//             },
-//             Instr::Var(u32) => {
-
-//             },
-//             Instr::Store(u32) => {
-
-//             },
-//             Instr::SetFrame(u32) => {
-
-//             },
-//             Instr::Call => {
-
-//             },
-//             Instr::Ret => {
-
-//             },
-//             Instr::Branch => {
-
-//             },
-//             Instr::Halt => s.halt = true,
-//         };
-//        // println!("{}, next instr = {:?}", show_state(&s), prog[s.pc])        
-//     }
-// }
 
 
 fn main() {
@@ -352,7 +276,7 @@ fn main() {
         s.pc = pc + 1;
         println!("{:?}", s.program.len() );
         println!("{:?}", pc);
-        println!("stack val{:?}", s.stack);
+        
         if pc >= s.program.len() as u32{
             panic!("pc is out to bounds");
         }
@@ -363,31 +287,31 @@ fn main() {
                 match val{
                     Val::Vunit => {//The unit value
                         s.stack.push(Val::Vunit);
-                        s.pc = s.pc+1;
+                        //s.pc = s.pc+1;
                     },          
                     Val::Vi32(num) => {
                         s.stack.push(Val::Vi32(*num));      //32-bit signed integers
-                        s.pc = s.pc+1;
+                        //s.pc = s.pc+1;
                     },
                     Val::Vbool(boolean) =>{ 
                         s.stack.push(Val::Vbool(*boolean));      //Booleans
-                        s.pc = s.pc+1;
+                        //s.pc = s.pc+1;
                     },
                     Val::Vloc(num)=> {
                         s.stack.push(Val::Vloc(*num));      //Stack or instruction locations
-                        s.pc = s.pc + 1;
+                        //s.pc = s.pc + 1;
                     },
                     Val::Vundef => {
                         s.stack.push(Val::Vundef);          //The unit value
-                        s.pc = s.pc+1;  
+                        //s.pc = s.pc+1;  
                     },
                     Val::Vsize(num) => {
                         s.stack.push(Val::Vsize(*num));
-                        s.pc = s.pc+1;
+                        //s.pc = s.pc+1;
                     },
                     Val::Vaddr(ad) => {
                         s.stack.push(Val::Vaddr(*ad));
-                        s.pc = s.pc +1;
+                        //s.pc = s.pc +1;
                     },
 
                 }
@@ -395,11 +319,12 @@ fn main() {
 
             },
             Instr::Pop => {
-                s.stack.pop();
+                s.stack.pop().unwrap();
                 s.pc = s.pc +1;
             },
             Instr::Peek(num32) => {
-               
+               let v = s.stack[*num32 as usize].clone();
+               s.stack.push(v);
             },
             Instr::Unary(U)=> {
                 Unop::Neg;
@@ -435,7 +360,7 @@ fn main() {
                             Val::Vi32(num) => y2 =num,
                             _ => panic!("didn't find Vi32 sub"),
                         }
-                        s.stack.push(Val::Vi32(x2 - y2));
+                        s.stack.push(Val::Vi32(y2 - x2));
                     },
                     Binop::Mul =>{
                         let x = s.stack.pop().unwrap();
@@ -465,7 +390,7 @@ fn main() {
                             Val::Vi32(num) => y2 =num,
                             _ => panic!("didn't find Vi32 sub"),
                         }
-                        s.stack.push(Val::Vi32(x2 / y2));
+                        s.stack.push(Val::Vi32(y2 / x2));
                     },
                     Binop::Lt =>{
                         let x = s.stack.pop().unwrap();
@@ -501,7 +426,13 @@ fn main() {
                 
             },
             Instr::Swap => {
-                
+                let mut v1 = s.stack.pop().unwrap();
+                let mut v2 = s.stack.pop().unwrap();
+                let mut tmp = v2;
+                v2 = v1;
+                v1 = tmp;
+                s.stack.push(v1);
+                s.stack.push(v2);
             },
             Instr::Alloc => {
 
@@ -512,27 +443,51 @@ fn main() {
             Instr::Get => {
 
             },
-            Instr::Var(u32) => {
+            Instr::Var(va) => {
 
             },
-            Instr::Store(u32) => {
+            Instr::Store(st) => {
 
             },
-            Instr::SetFrame(u32) => {
-
+            Instr::SetFrame(vloc) => {
+                s.stack.push(Val::Vloc(*vloc));
+                s.fp = (s.stack.len() as u32) - vloc -1;
             },
             Instr::Call => {
+                let target = s.stack.pop().unwrap();
+                s.stack.push(Val::Vloc(pc));
+                match target {
+                    Val::Vloc(loc) => s.pc = loc,
+                    _ => panic!("oh no, no location"),
+                }
+
 
             },
             Instr::Ret => {
-
+                let cur_fp = s.fp;
+                let vret = s.stack.pop().unwrap();
+                let mut prev_pc = 0;
+                //println!("{:?}", vret);
+                match s.stack.pop().unwrap(){
+                    Val::Vloc(num) =>{
+                        prev_pc = num;
+                    },
+                    _ => panic!("ret failed"),
+                }
+                s.pc = prev_pc;
+                while prev_pc > s.fp {
+                    s.stack.pop();
+                    prev_pc = prev_pc -1;
+                }
+                s.stack.push(vret);
             },
             Instr::Branch => {
 
             },
             Instr::Halt => s.halt = true,
-        };
-       // println!("{}, next instr = {:?}", show_state(&s), prog[s.pc])        
+        }
+       // println!("{}, next instr = {:?}", show_state(&s), prog[s.pc]) 
+       println!("stack val{:?}", s.stack);       
     }
 
     // for p in prog
