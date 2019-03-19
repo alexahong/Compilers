@@ -227,7 +227,7 @@ pub enum Debug {
     NODEBUG
 }
 
-
+let MAX_HEAP_SIZE = 1024;
 
 fn main() {
 
@@ -411,13 +411,14 @@ fn main() {
             Instr::Swap => {
                 let mut v1 = s.stack.pop().unwrap();
                 let mut v2 = s.stack.pop().unwrap();
-                let mut tmp = v2;
-                v2 = v1;
-                v1 = tmp;
+                // let mut tmp = v2;
+                // v2 = v1;
+                // v1 = tmp;
                 s.stack.push(v1);
                 s.stack.push(v2);
             },
             Instr::Alloc => {
+                
                 let mut init = s.stack.pop().unwrap();
                 let vsize = s.stack.pop().unwrap();
                 let mut size = 0;
@@ -427,10 +428,14 @@ fn main() {
                     },
                     _ => panic!("alloc panic"),
                 }
+                s.stack.push(Val::Vaddr(s.heap.len()));
                 s.heap.push(Val::Vsize(size));
+                if s.heap.len() + size > MAX_HEAP_SIZE{
+                    panic!("went over heap size");
+                }
                 for i in 0..size{
-                    let init_clone = s.stack.pop().unwrap().clone();
-                    s.heap.push(init_clone);
+                    //let init_clone = s.stack.pop().unwrap().clone();
+                    s.heap.push(init);
                 }
 
             },
@@ -469,16 +474,26 @@ fn main() {
                     },
                     _ => panic!("panic"),
                 }
-                let sum = ind + base + 1;
-                let get = s.heap[sum as usize].clone();
-                s.stack.push(get);
+                if let Val::Vsize(array_size) = s.heap[base]{
+                    if ind > array_size{
+                        panic!("not possible");
+                    }
+                    let sum = ind + base + 1;
+                    let get = s.heap[sum as usize].clone();
+                    s.stack.push(get);
+                }
+                else {
+                    panic!("something wrong with the heap");
+                }
+                if 
+                
             },
             Instr::Var(va) => {
                 if s.fp + va > s.stack.len() as u32{
                     panic!("out of range");
                 }
                 else{
-                    s.stack.insert((s.fp + va) as usize, s.stack[(s.fp + *va) as usize].clone())
+                    s.stack.push(s.stack[s.fp + va as usize]);
                 }
             },
             Instr::Store(st) => {
@@ -487,7 +502,8 @@ fn main() {
                     panic!("out of range");
                 }
                 else{
-                    s.stack.insert(*vnew as usize, s.stack[s.fp as usize].clone());
+                   let v = s.stack.pop().unwrap();
+                   s.stack[s.fp + st] = v;
                 }
             },
             Instr::SetFrame(vloc) => {
@@ -509,17 +525,17 @@ fn main() {
             Instr::Ret => {
                 let cur_fp = s.fp;
                 let vret = s.stack.pop().unwrap();
-                let mut prev_pc = 0;
+                //let mut prev_pc = 0;
                 match s.stack.pop().unwrap(){
                     Val::Vloc(num) =>{
-                        prev_pc = num;
+                        s.pc = num;
                     },
                     _ => panic!("ret failed"),
                 }
-                s.pc = prev_pc;
-                while prev_pc > s.fp {
+                let caller_fp = s.stack.pop().unwrap();
+                while s.stack.len() > s.fp {
                     s.stack.pop();
-                    prev_pc = prev_pc -1;
+                    
                 }
                 s.stack.push(vret);
             },
