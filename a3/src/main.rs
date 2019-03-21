@@ -419,7 +419,7 @@ fn main() {
             },
             Instr::Alloc => {
                 
-                let mut init = s.stack.pop().unwrap();
+                let init = s.stack.pop().unwrap().clone();
                 let vsize = s.stack.pop().unwrap();
                 let mut size = 0;
                 match vsize{
@@ -435,7 +435,7 @@ fn main() {
                 }
                 for i in 0..size{
                     //let init_clone = s.stack.pop().unwrap().clone();
-                    s.heap.push(init);
+                    s.heap.push(init.clone());
                 }
 
             },
@@ -489,11 +489,14 @@ fn main() {
                 
             },
             Instr::Var(va) => {
+                let n = va;
                 if s.fp + va > s.stack.len() as u32{
                     panic!("out of range");
                 }
                 else{
-                    s.stack.push(s.stack[s.fp + (*va as u32)]);
+                    // s.stack.push(s.stack[s.fp + (va as u32)]);
+                    let n2 = s.stack[(s.fp + n) as usize].clone();
+                     s.stack.push(n2);
                 }
             },
             Instr::Store(st) => {
@@ -503,7 +506,8 @@ fn main() {
                 }
                 else{
                    let v = s.stack.pop().unwrap();
-                   s.stack[s.fp + (*st as u32)] = v;
+                //    s.stack[s.fp + (st as u32)] = v;
+                 s.stack[(s.fp as usize) + *vnew as usize] = v;
                 }
             },
             Instr::SetFrame(vloc) => {
