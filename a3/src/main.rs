@@ -241,6 +241,8 @@ fn main() {
     let mut prog: Vec<Instr> = Vec::new();// new vec to store instructions
     let mut byte_iterator = binvec.iter();
     let prog_len = <u32 as FromBin>::from_bin(byte_iterator.by_ref()); // first 4 bytes
+
+    let mut to_space: Vec<Val> = Vec::new();
     
    
     for i in 0..prog_len
@@ -250,9 +252,22 @@ fn main() {
     //println!("{:?}", byte_iterator.by_ref());
 
     }
+
+    
     //println!("{:?}", prog);
     //run(&mut init_state,  &prog);// execution loop
      let mut s = State{halt: false, pc:0, fp:0, stack: Vec::new(), heap: Vec::new(), program: prog};
+
+     let max : i32 = s.heap.len() as i32;
+    for i in 0..max{
+        let heap_ind = i as usize;
+        let heap_add = &s.heap[heap_ind];
+        match heap_add{
+            Val::Vaddr(x) => to_space.push(heap_add.clone()),
+            _ => panic!("not getting addresses"),
+        }
+    }
+
     'mainloop:loop { 
         if s.halt{break 'mainloop}
         let mut pc = s.pc;
