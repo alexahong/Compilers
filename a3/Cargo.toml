@@ -1,7 +1,9 @@
 [package]
-name = "a3"
+name = "a2"
 version = "0.1.0"
-authors = ["jm876913 <jm876913@ohio.edu>"]
+authors = ["alexahong"]
 edition = "2018"
 
+
 [dependencies]
+byteorder = "1"
