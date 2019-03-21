@@ -227,7 +227,7 @@ pub enum Debug {
     NODEBUG
 }
 
-let MAX_HEAP_SIZE = 1024;
+const MAX_HEAP_SIZE : i32 = 1024;
 
 fn main() {
 
@@ -417,9 +417,9 @@ fn main() {
                 s.stack.push(v1);
                 s.stack.push(v2);
             },
-            Instr::Alloc => {
+           Instr::Alloc => {
                 
-                let mut init = s.stack.pop().unwrap();
+                let init = s.stack.pop().unwrap().clone();
                 let vsize = s.stack.pop().unwrap();
                 let mut size = 0;
                 match vsize{
@@ -430,12 +430,12 @@ fn main() {
                 }
                 s.stack.push(Val::Vaddr(s.heap.len()));
                 s.heap.push(Val::Vsize(size));
-                if s.heap.len() + size > MAX_HEAP_SIZE{
+                if s.heap.len() + size as usize > MAX_HEAP_SIZE as usize{
                     panic!("went over heap size");
                 }
                 for i in 0..size{
                     //let init_clone = s.stack.pop().unwrap().clone();
-                    s.heap.push(init);
+                    s.heap.push(init.clone());
                 }
 
             },
@@ -457,7 +457,7 @@ fn main() {
                     _ => panic!("bad"),
                 }
             },
-            Instr::Get => {
+           Instr::Get => {
                 let mut vid = s.stack.pop().unwrap();
                 let mut ind = 0;
                 let vbase =s.stack.pop().unwrap();
@@ -474,7 +474,7 @@ fn main() {
                     },
                     _ => panic!("panic"),
                 }
-                if let Val::Vsize(array_size) = s.heap[base]{
+                if let Val::Vsize(array_size) = s.heap[base as usize]{
                     if ind > array_size{
                         panic!("not possible");
                     }
@@ -485,26 +485,32 @@ fn main() {
                 else {
                     panic!("something wrong with the heap");
                 }
-                if 
+                
                 
             },
             Instr::Var(va) => {
+                let n = va;
                 if s.fp + va > s.stack.len() as u32{
-                    panic!("out of range");
+                    panic!("out of range VAR");
                 }
                 else{
-                    s.stack.push(s.stack[s.fp + va as usize]);
+                    // s.stack.push(s.stack[s.fp + (va as u32)]);
+                    let n2 = s.stack[(s.fp + n) as usize].clone();
+                     s.stack.push(n2);
                 }
             },
             Instr::Store(st) => {
-                let vnew = st;
-                if s.fp + st > s.stack.len() as u32{
-                    panic!("out of range");
+               let my_x = st;
+                let index_1 = s.fp + my_x;
+                let index =index_1 as usize;
+                let p_c = s.pc as usize;
+                if index > p_c{
+                    panic!("Store index out of range");
                 }
-                else{
-                   let v = s.stack.pop().unwrap();
-                   s.stack[s.fp + st] = v;
-                }
+                let tmp = s.stack.pop().unwrap();
+                s.stack[index] = tmp;
+                s.pc -= 1;
+
             },
             Instr::SetFrame(vloc) => {
                 s.stack.push(Val::Vloc(*vloc));
@@ -533,7 +539,7 @@ fn main() {
                     _ => panic!("ret failed"),
                 }
                 let caller_fp = s.stack.pop().unwrap();
-                while s.stack.len() > s.fp {
+                while s.stack.len() > s.fp as usize{
                     s.stack.pop();
                     
                 }
