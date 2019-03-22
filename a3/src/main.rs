@@ -243,6 +243,7 @@ fn main() {
     let prog_len = <u32 as FromBin>::from_bin(byte_iterator.by_ref()); // first 4 bytes
 
     let mut to_space: Vec<Val> = Vec::new();
+    let mut from_space: Vec<Val> = Vec::new();
     
    
     for i in 0..prog_len
@@ -258,15 +259,7 @@ fn main() {
     //run(&mut init_state,  &prog);// execution loop
      let mut s = State{halt: false, pc:0, fp:0, stack: Vec::new(), heap: Vec::new(), program: prog};
 
-     let max : i32 = s.heap.len() as i32;
-    for i in 0..max{
-        let heap_ind = i as usize;
-        let heap_add = &s.heap[heap_ind];
-        match heap_add{
-            Val::Vaddr(x) => to_space.push(heap_add.clone()),
-            _ => panic!("not getting addresses"),
-        }
-    }
+     
 
     'mainloop:loop { 
         if s.halt{break 'mainloop}
@@ -451,6 +444,29 @@ fn main() {
                 for i in 0..size{
                     //let init_clone = s.stack.pop().unwrap().clone();
                     s.heap.push(init.clone());
+                }
+                // garbage collection
+                let max : i32 = s.heap.len() as i32;
+
+               
+                    //println!("{:?}", s.heap);
+                    println!("{:?}", s.stack);
+                    let st = s.stack.clone();
+                
+                for i in st {
+                    // let heap_ind = i as usize;
+                    // let heap_add = &s.stack[i];
+                    //println!("{:?}", heap_add);
+                    println!("{:?}", i);
+                   // match i{
+                       if let Val::Vaddr(base) = i {
+                            if s.heap[base as usize] == Val::Vsize(size){
+                                let mut val = Val::Vaddr(to_space.len());
+                                //to_space.push(heap_add.clone())
+                            }
+                        }
+                        
+                    
                 }
 
             },
