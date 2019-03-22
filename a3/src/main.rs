@@ -452,17 +452,25 @@ fn main() {
                     //println!("{:?}", s.heap);
                     println!("{:?}", s.stack);
                     let st = s.stack.clone();
+                    let mut next = (to_space.len() + 1) as i32 ;
+                   
                 
-                for i in st {
+                for mut i in st {
                     // let heap_ind = i as usize;
                     // let heap_add = &s.stack[i];
                     //println!("{:?}", heap_add);
-                    println!("{:?}", i);
+                   // println!("{:?}", i);
                    // match i{
                        if let Val::Vaddr(base) = i {
                             if s.heap[base as usize] == Val::Vsize(size){
-                                let mut val = Val::Vaddr(to_space.len());
+                                i = Val::Vaddr(to_space.len());
+                                to_space.push(s.heap[base as usize].clone());
+                                next += size;    
+                                 println!("{:?}", next);
                                 //to_space.push(heap_add.clone())
+                            }
+                            else {
+                                panic!("heap[base] is not equal to Vsize(size)");
                             }
                         }
                         
