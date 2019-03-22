@@ -14,6 +14,7 @@ use std::slice::Iter;
 extern crate byteorder;
 use byteorder::{ByteOrder, ReadBytesExt, BigEndian};
 use std::string::ToString;
+use std::collections::HashMap;
 
 
 
@@ -244,6 +245,8 @@ fn main() {
 
     let mut to_space: Vec<Val> = Vec::new();
     let mut from_space: Vec<Val> = Vec::new();
+
+    //let mut ht: Val = HashMap::new();
     
    
     for i in 0..prog_len
@@ -438,43 +441,73 @@ fn main() {
                 }
                 s.stack.push(Val::Vaddr(s.heap.len()));
                 s.heap.push(Val::Vsize(size));
-                if s.heap.len() + size as usize > MAX_HEAP_SIZE as usize{
-                    panic!("went over heap size");
-                }
+                // if s.heap.len() + size as usize > MAX_HEAP_SIZE as usize{
+                //     panic!("went over heap size");
+                // }
                 for i in 0..size{
                     //let init_clone = s.stack.pop().unwrap().clone();
                     s.heap.push(init.clone());
                 }
                 // garbage collection
-                let max : i32 = s.heap.len() as i32;
+                let cur_heap_len : i32 = s.heap.len() as i32;
+                    println!("current heap size {:?}", cur_heap_len);
 
                
                     //println!("{:?}", s.heap);
-                    println!("{:?}", s.stack);
-                    let st = s.stack.clone();
-                    let mut next = (to_space.len() + 1) as i32 ;
-                   
-                
-                for mut i in st {
-                    // let heap_ind = i as usize;
-                    // let heap_add = &s.stack[i];
-                    //println!("{:?}", heap_add);
-                   // println!("{:?}", i);
-                   // match i{
-                       if let Val::Vaddr(base) = i {
-                            if s.heap[base as usize] == Val::Vsize(size){
-                                i = Val::Vaddr(to_space.len());
-                                to_space.push(s.heap[base as usize].clone());
-                                next += size;    
-                                 println!("{:?}", next);
-                                //to_space.push(heap_add.clone())
-                            }
-                            else {
-                                panic!("heap[base] is not equal to Vsize(size)");
-                            }
-                        }
-                        
                     
+                    
+                   
+                while cur_heap_len > MAX_HEAP_SIZE{
+                   // println!("{:?}", s.stack);
+                    let st = s.stack.clone();
+                    let mut next = to_space.len() as i32;
+                     println!("{:?}", next);
+                    //let mut scan: *const Val = s.heap.as_ptr();
+                    let mut scan = to_space.len() as i32;
+                     println!("scan {:?}", scan);
+                    for mut i in st {
+                        
+                        if let Val::Vaddr(base) = i {
+                            println!("Vsize val {:?}", Val::Vsize(size));
+                            println!("heap[base] {:?}", s.heap[base as usize]);
+                            //println!("heap {:?}", s.heap);
+                                if s.heap[base as usize] == Val::Vsize(size){
+                                    i = Val::Vaddr(to_space.len());
+                                    to_space.push(s.heap[base as usize].clone());
+                                    //println!("to_space: {:?}", to_space);
+                                    next += size;    
+                                    println!("{:?}", next);
+                                    //to_space.push(heap_add.clone())
+                                }
+                                // else {
+                                //     panic!("heap[base] is not equal to Vsize(size)");
+                                // }
+                            } 
+                    }
+                    while scan < next{
+                        let t_clone = to_space.clone();
+                        //println!("{:?}", to_space);
+                        for mut i in t_clone{
+                        // println!("{:?}", i);//right now i = Vize(100)
+                            if let Val::Vaddr(base) = i {
+                                if s.heap[base as usize] == Val::Vsize(size){
+                                    i = Val::Vaddr(to_space.len());
+                                    to_space.push(s.heap[base as usize].clone());
+                                    next += size;    
+                                    // println!("{:?}", next);
+                                    //to_space.push(heap_add.clone())
+                                }
+                                // else {
+                                //     panic!("heap[base] is not equal to Vsize(size)");
+                                // }
+                            }
+                            if let Val::Vsize(S) = i{
+                                scan += 1;
+                            } 
+
+                        }
+
+                    }
                 }
 
             },
