@@ -134,6 +134,142 @@ fn test_i32_from_bin() {
     // More test cases like this
 }
 
+#[test]
+fn SwapTest() {
+    //let mut s : crate::State = State{halt: false, pc: 0, fp: 0, stack: Vec::new(), heap: Vec::new(), program: instrucs};
+    let mut s: crate::State = State {
+        halt: false,
+        pc : 0, // This can be any value, as s.pc is not used in Alloc
+        fp : 0, // This can be any value, as s.fp is not used in Alloc
+        stack : Vec::new(), // The only important values here are the last 2
+        heap : Vec::new(), // All that really matters here is that the heap has a length < 1021
+        program : Vec::new(), // This can be any value, as s.program is not used in this test
+    };
+    //[Val::Vloc(0), Val::Vi32(19), Val::Vunit, Val::Vi32(2), Val::Vunit],
+    s.stack.push(Val::Vloc(0));
+    s.stack.push(Val::Vi32(19));
+
+    let i = &Instr::Swap;
+    instr(i, &mut s);
+    //println!("stack:{:?}", s.stack);
+    //println!("X: {:?}", s.stack.pop().unwrap());
+//    println!("Y: {:?}", s.stack.pop().unwrap());
+    assert_eq!(s.stack, [Val::Vi32(19), Val::Vloc(0)]);
+}
+#[test]
+fn SetTest() {
+    //let mut s : crate::State = State{halt: false, pc: 0, fp: 0, stack: Vec::new(), heap: Vec::new(), program: instrucs};
+    let mut s: crate::State = State {
+        halt: false,
+        pc : 0, // This can be any value, as s.pc is not used in Alloc
+        fp : 0, // This can be any value, as s.fp is not used in Alloc
+        stack : Vec::new(), // The only important values here are the last 2
+        heap : Vec::new(), // All that really matters here is that the heap has a length < 1021
+        program : Vec::new(), // This can be any value, as s.program is not used in this test
+    };
+    //[Val::Vloc(0), Val::Vi32(19), Val::Vunit, Val::Vi32(2), Val::Vunit],
+    s.stack.push(Val::Vloc(0));
+    s.stack.push(Val::Vi32(19));
+    s.stack.push(Val::Vunit);
+    s.stack.push(Val::Vi32(2));
+    s.stack.push(Val::Vunit);
+
+    s.program.push(Instr::Alloc);
+
+    let i = &Instr::Alloc;
+    instr(i, &mut s);
+
+    s.stack.push(Val::Vaddr(0));
+    s.stack.push(Val::Vi32(1));
+    s.stack.push(Val::Vi32(10));
+
+    let i = &Instr::Set;
+    instr(i, &mut s);
+    assert_eq!(s.stack, [Val::Vloc(0), Val::Vi32(19), Val::Vunit, Val::Vaddr(0)]);
+    assert_eq!(s.heap, [Val::Vsize(2), Val::Vunit, Val::Vi32(10)]);
+}
+
+#[test]
+fn VarTest() {
+    //let mut s : crate::State = State{halt: false, pc: 0, fp: 0, stack: Vec::new(), heap: Vec::new(), program: instrucs};
+    let mut s: crate::State = State {
+        halt: false,
+        pc : 0, // This can be any value, as s.pc is not used in Alloc
+        fp : 0, // This can be any value, as s.fp is not used in Alloc
+        stack : Vec::new(), // The only important values here are the last 2
+        heap : Vec::new(), // All that really matters here is that the heap has a length < 1021
+        program : Vec::new(), // This can be any value, as s.program is not used in this test
+    };
+    //[Val::Vloc(0), Val::Vi32(19), Val::Vunit, Val::Vi32(2), Val::Vunit],
+    s.stack.push(Val::Vloc(0));
+    s.stack.push(Val::Vi32(19));
+    s.stack.push(Val::Vunit);
+    s.stack.push(Val::Vi32(2));
+    s.stack.push(Val::Vunit);
+
+    s.program.push(Instr::Alloc);
+
+    let i = &Instr::Alloc;
+    instr(i, &mut s);
+
+    s.stack.push(Val::Vaddr(0));
+    s.stack.push(Val::Vi32(1));
+    s.stack.push(Val::Vi32(10));
+
+    let i = &Instr::Set;
+    instr(i, &mut s);
+
+    let i = &Instr::Var(2);
+    instr(i, &mut s);
+
+    assert_eq!(s.stack, [Val::Vloc(0), Val::Vi32(19), Val::Vunit, Val::Vaddr(0), Val::Vunit]);
+    assert_eq!(s.heap, [Val::Vsize(2), Val::Vunit, Val::Vi32(10)]);
+}
+
+#[test]
+fn GetTest() {
+    //let mut s : crate::State = State{halt: false, pc: 0, fp: 0, stack: Vec::new(), heap: Vec::new(), program: instrucs};
+    let mut s: crate::State = State {
+        halt: false,
+        pc : 0, // This can be any value, as s.pc is not used in Alloc
+        fp : 0, // This can be any value, as s.fp is not used in Alloc
+        stack : Vec::new(), // The only important values here are the last 2
+        heap : Vec::new(), // All that really matters here is that the heap has a length < 1021
+        program : Vec::new(), // This can be any value, as s.program is not used in this test
+    };
+    //[Val::Vloc(0), Val::Vi32(19), Val::Vunit, Val::Vi32(2), Val::Vunit],
+    s.stack.push(Val::Vloc(0));
+    s.stack.push(Val::Vi32(19));
+    s.stack.push(Val::Vunit);
+    s.stack.push(Val::Vi32(2));
+    s.stack.push(Val::Vunit);
+
+    s.program.push(Instr::Alloc);
+
+    let i = &Instr::Alloc;
+    instr(i, &mut s);
+
+    s.stack.push(Val::Vaddr(0));
+    s.stack.push(Val::Vi32(1));
+    s.stack.push(Val::Vi32(10));
+
+    let i = &Instr::Set;
+    instr(i, &mut s);
+
+    let i = &Instr::Var(2);
+    instr(i, &mut s);
+
+    s.stack.push(Val::Vaddr(0));
+    s.stack.push(Val::Vi32(0));
+
+    let i = &Instr::Get;
+    instr(i, &mut s);
+
+    assert_eq!(s.stack, [Val::Vloc(0), Val::Vi32(19), Val::Vunit, Val::Vaddr(0), Val::Vunit, Val::Vunit]);
+    assert_eq!(s.heap, [Val::Vsize(2), Val::Vunit, Val::Vi32(10)]);
+}
+
+
 impl FromBin for Val 
 {
     fn from_bin(mut binary:&mut Iter<u8>) -> Val
@@ -152,13 +288,7 @@ impl FromBin for Val
     }
 }
 
-// fn test_val_from_bin() 
-// {
-//     let v1 = vec![0];
-//     let mut buf = v1.iter();
-//     assert_eq!(Val::from_bin(&mut buf),Val::Vi32(20));
-//     // other test cases here
-// }
+
 
 impl FromBin for Unop
 {
@@ -378,9 +508,7 @@ pub fn instr( i: &Instr, s: &mut State)
             Instr::Swap => {
                 let mut v1 = s.stack.pop().unwrap();
                 let mut v2 = s.stack.pop().unwrap();
-                // let mut tmp = v2;
-                // v2 = v1;
-                // v1 = tmp;
+              
                 s.stack.push(v1);
                 s.stack.push(v2);
             },
@@ -394,9 +522,7 @@ pub fn instr( i: &Instr, s: &mut State)
                     if num as usize + s.heap.len() as usize > MAX_HEAP_SIZE as usize
                     {
                         garbage_collector(s);
-                        // if num as usize + s.heap.len() as usize > MAX_HEAP_SIZE as usize{
-                        //     panic!("This is bigger then 1024 vals which is not allowed");
-                        // }
+                       
                     }
                     
                     s.stack.push(Val::Vaddr(s.heap.len() as usize));
@@ -465,26 +591,26 @@ pub fn instr( i: &Instr, s: &mut State)
                     panic!("out of range var");
                 }
                 else{
-                    // s.stack.push(s.stack[s.fp + (va as u32)]);
                     let n2 = s.stack[(s.fp + n) as usize].clone();
                      s.stack.push(n2);
                 }
             },
-             Instr::Store(v)         =>{
-             if (s.fp + v) < (s.stack.len() as u32) {
-                s.stack[(s.fp+v) as usize] = s.stack.pop().unwrap();
-            }else{
-                panic!("Index out of range!");
-            }
-        },
-
+            Instr::Store(st) => {
+                let mut vnew = st;
+                if s.fp + vnew > s.stack.len() as u32{
+                    panic!("out of range store");
+                }
+                else{
+                   let v = s.stack.pop().unwrap();
+                 s.stack[(s.fp as usize) + *vnew as usize] = v;
+                }
+            },
             Instr::SetFrame(vloc) => {
                 s.stack.push(Val::Vloc(*vloc));
                 s.fp = (s.stack.len() as u32) - vloc - 1;
             },
             Instr::Call => {
                 let target = s.stack.pop().unwrap();
-                //println!("{:?}", target);
                 match target {
                     Val::Vloc(loc) =>
                     {
@@ -505,30 +631,33 @@ pub fn instr( i: &Instr, s: &mut State)
                 let caller_fp = s.stack.pop().unwrap();
   				let cur_fp = s.fp;
                 let cur_pc = s.pc;
+
                 match caller_pc{
-                    Val::Vloc(num) =>
-                        s.pc = num,
-                    Val::Vi32(num2) =>
-                       	s.pc = num2 as u32,
+
+                    Val::Vloc(num) => s.pc = num,
+                    Val::Vi32(num2) => s.pc = num2 as u32,
+                 
                     _=> panic!("incorrect Vals caller_pc"),
                        
                     
                 }
 
     			match caller_fp{
-                    Val::Vloc(num) =>
-                        s.fp = num,
-                    Val::Vi32(num2) =>
-                       	s.fp = num2 as u32,
+
+                    Val::Vloc(num) => s.fp = num,
+                    Val::Vi32(num2) =>  s.fp = num2 as u32,
+                     
                     _=> panic!("incorrect Vals caller_fp"),
                        
                     
                 }
+
                 while s.stack.len() > cur_fp as usize {
 
                     s.stack.pop();
                     
                 }
+
                 s.stack.push(vret);
             },
 
@@ -555,51 +684,76 @@ pub fn instr( i: &Instr, s: &mut State)
         }
 
 }
+
+// Pass 1: Search the Stack
+// - For each value = Vaddr(base) entry in the stack
+//     + If from_heap[base] = Vsize(size)
+//         * set value = Vaddr(to_heap.length)
+//         * Copy the array at from_heap[base] into the to_heap
+//         * next += size
+//     + Else panic
+ 
+// Pass 2: Search the To Heap
+// - While scan < next
+//     + For each value = Vaddr(base) entry in the to_heap
+//         - Repeat the steps in the above for loop, just using the to_heap instead of the stack
+//         - Every time you encounter a `Vsize`, set scan to the current index
+
 pub fn garbage_collector(s: &mut State){
-   println!("GC start: {}", s.heap.len());
     let mut next = 0;
     let mut scan = 0;
-    let mut to_heap: Vec<Val>  = Vec::with_capacity(MAX_HEAP_SIZE as usize);  
-    //Loop looking for Vaddr within the stack
-///s.stack = 575
+    let mut to_heap: Vec<Val>  = Vec::with_capacity(MAX_HEAP_SIZE as usize); 
+    let mut address: HashMap<usize, usize> = HashMap::new();
+ 
+//first pass
 
-    for num in 0..s.stack.len(){   
-    	                           // println!("stack: {:?}",s.stack); 
+    for num in 0..s.stack.len()
+    {   // each entry in the stack
+    	                           
 
-                             //First pass of copy collection, getting values from the stack
-        if let Val::Vaddr(base) = s.stack[num] {    
-                        println!("Next: {}", next); 
+        if let Val::Vaddr(base) = s.stack[num] 
+        {  //vaddr(base) in stack  
            
-            if let Val::Vsize(size) = &s.heap[base] { 
-                println!("Size: {}", size); 
-                s.stack[num] = Val::Vaddr(next);
-                for copy in base..(base + *size as usize + 1){
-                    to_heap.push(s.heap[copy].clone());
-                }
-            next += *size as usize + 1;
-            println!(" next value:{:?}",next );
-            } 
-        }
-    }
-    let mut stored_addresses: HashMap<usize, usize> = HashMap::new();
-    while scan != next{                                         //Second pass of the copy collection, allocating the rest of arrays
-    if let Val::Vaddr(base) = to_heap[scan as usize]{           //onto the To_Heap from the From_Heap
-        if let Some(&number) = stored_addresses.get(&base){
+            if let Some(&number) = address.get(&base)
+        {
             to_heap[scan as usize] = Val::Vaddr(number);
-        }else{
-            if let Val::Vsize(size) = &s.heap[base]{
-                for copy in base..(base+(*size as usize)+1){
-                    to_heap.push(s.heap[copy].clone());
+        }else
+        {
+            if let Val::Vsize(mut size) = &s.heap[base]{
+                for val in base..(base+(size as usize))
+                {
+                    to_heap.push(s.heap[val].clone());
                 }
-                next += *size as usize;
-                stored_addresses.insert(base, scan);
+                next += size as usize;
+                address.insert(base, scan); //add adress into hash that has been copied
+            }
+        } 
+      	}
+    }
+
+
+ //second pass
+    while scan < next{                                     
+    if let Val::Vaddr(base) = to_heap[scan as usize]
+    {          
+        if let Some(&number) = address.get(&base)
+        {
+            to_heap[scan as usize] = Val::Vaddr(number);
+        }else
+        {
+            if let Val::Vsize(mut size) = &s.heap[base]{
+                for val in base..(base+(size as usize))
+                {
+                    to_heap.push(s.heap[val].clone());
+                }
+                next += size as usize;
+                address.insert(base, scan);
             }
         } 
     }
     scan += 1;
     }
-    s.heap = to_heap;
-    println!("GC end: {}", s.heap.len());
+    s.heap = to_heap; // switch
 }
 
 fn main() {
@@ -615,10 +769,7 @@ fn main() {
     let mut byte_iterator = binvec.iter();
     let prog_len = <u32 as FromBin>::from_bin(byte_iterator.by_ref()); // first 4 bytes
 
-    let mut to_space: Vec<Val> = Vec::new();
-    let mut from_space: Vec<Val> = Vec::new();
 
-    //let mut ht: Val = HashMap::new();
     
         let mut s = State{halt: false, pc:0, fp:0, stack: Vec::new(), heap: Vec::new(), program: prog};
 
@@ -626,21 +777,17 @@ fn main() {
     {
 
      s.program.push(Instr::from_bin(byte_iterator.by_ref()));//pushes list of instr
-    //println!("{:?}", byte_iterator.by_ref());
 
     }
 
     
-    //println!("{:?}", prog);
-    //run(&mut init_state,  &prog);// execution loop
 
     
     'mainloop:loop { 
         if s.halt{break 'mainloop}
         let mut pc = s.pc;
         s.pc = pc + 1;
-        //println!("{:?}", s.program.len() );
-        //println!("{:?}", pc);
+
         
         if (pc as usize) >= s.program.len(){
             panic!("pc is out to bounds");
@@ -648,19 +795,10 @@ fn main() {
         let i = &s.program[pc as usize].clone();
         instr(i, &mut s);
        } //end of mainloop
-		// s.program.push(Instr::)             
-  //   }
+		           
+
     let mut output = s.stack.pop().unwrap();
-    //s.stack.read_to_string(&mut output);
-  //   //let output: String = s.stack.into_iter().map(|i| i.to_string()).collect::<String>();
      print!("{:?}", output);
-
-    // for p in prog
-    // {
-    //      println!("{:?}",p );//prints list of instr
-    // }
-
-
 
 
 }
