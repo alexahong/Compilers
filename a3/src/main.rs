@@ -383,7 +383,7 @@ pub fn instr( i: &Instr, s: &mut State)
                         s.heap.push(vinit);
                     }
                 }
-                _    => panic!("AHAHAHAHA"),
+                _    => panic!("Alloc Panic"),
             }
 
             },
