@@ -227,55 +227,11 @@ pub enum Debug {
     DEBUG,
     NODEBUG
 }
-
 const MAX_HEAP_SIZE : i32 = 1024;
 
-fn main() {
-
-    
-    let args: Vec<_> = env::args().collect();
-    let mut file = String::new();
-    let file = args[1].to_string();
-
-
-    let mut binvec: Vec<u8> = fs::read(file).unwrap(); // values from .o file 
-    let mut prog: Vec<Instr> = Vec::new();// new vec to store instructions
-    let mut byte_iterator = binvec.iter();
-    let prog_len = <u32 as FromBin>::from_bin(byte_iterator.by_ref()); // first 4 bytes
-
-    let mut to_space: Vec<Val> = Vec::new();
-    let mut from_space: Vec<Val> = Vec::new();
-
-    //let mut ht: Val = HashMap::new();
-    
-   
-    for i in 0..prog_len
-    {
-
-     prog.push(Instr::from_bin(byte_iterator.by_ref()));//pushes list of instr
-    //println!("{:?}", byte_iterator.by_ref());
-
-    }
-
-    
-    //println!("{:?}", prog);
-    //run(&mut init_state,  &prog);// execution loop
-     let mut s = State{halt: false, pc:0, fp:0, stack: Vec::new(), heap: Vec::new(), program: prog};
-
-     
-
-    'mainloop:loop { 
-        if s.halt{break 'mainloop}
-        let mut pc = s.pc;
-        s.pc = pc + 1;
-        //println!("{:?}", s.program.len() );
-        //println!("{:?}", pc);
-        
-        if pc >= s.program.len() as u32{
-            panic!("pc is out to bounds");
-        }
-        let i : &Instr = &s.program[pc as usize].clone();
-        match i {
+pub fn instr( i: &Instr, s: &mut State)
+{
+	match i {
             Instr::Push(val) => {
                 //pc = pc+1;
                 match val{
@@ -428,87 +384,30 @@ fn main() {
                 s.stack.push(v1);
                 s.stack.push(v2);
             },
+
             Instr::Alloc => {
-                
-                let init = s.stack.pop().unwrap().clone();
-                let vsize = s.stack.pop().unwrap();
-                let mut size = 0;
-                match vsize{
-                    Val::Vi32(num) => {
-                        size = num;
-                    },
-                    _ => panic!("alloc panic"),
-                }
-                s.stack.push(Val::Vaddr(s.heap.len()));
-                s.heap.push(Val::Vsize(size));
-                // if s.heap.len() + size as usize > MAX_HEAP_SIZE as usize{
-                //     panic!("went over heap size");
-                // }
-                for i in 0..size{
-                    //let init_clone = s.stack.pop().unwrap().clone();
-                    s.heap.push(init.clone());
-                }
-                // garbage collection
-                let cur_heap_len : i32 = s.heap.len() as i32;
-                    println!("current heap size {:?}", cur_heap_len);
-
-               
-                    //println!("{:?}", s.heap);
+               let temp2 = s.stack.pop().unwrap(); //vinit
+            let temp1 = s.stack.pop().unwrap(); //Vi32(size)
+            match temp1 {
+                Val::Vi32(num) =>{
                     
-                    
-                   
-                while cur_heap_len > MAX_HEAP_SIZE{
-                   // println!("{:?}", s.stack);
-                    let st = s.stack.clone();
-                    let mut next = to_space.len() as i32;
-                     println!("{:?}", next);
-                    //let mut scan: *const Val = s.heap.as_ptr();
-                    let mut scan = to_space.len() as i32;
-                     println!("scan {:?}", scan);
-                    for mut i in st {
-                        
-                        if let Val::Vaddr(base) = i {
-                            println!("Vsize val {:?}", Val::Vsize(size));
-                            println!("heap[base] {:?}", s.heap[base as usize]);
-                            //println!("heap {:?}", s.heap);
-                                if s.heap[base as usize] == Val::Vsize(size){
-                                    i = Val::Vaddr(to_space.len());
-                                    to_space.push(s.heap[base as usize].clone());
-                                    //println!("to_space: {:?}", to_space);
-                                    next += size;    
-                                    println!("{:?}", next);
-                                    //to_space.push(heap_add.clone())
-                                }
-                                // else {
-                                //     panic!("heap[base] is not equal to Vsize(size)");
-                                // }
-                            } 
-                    }
-                    while scan < next{
-                        let t_clone = to_space.clone();
-                        //println!("{:?}", to_space);
-                        for mut i in t_clone{
-                        // println!("{:?}", i);//right now i = Vize(100)
-                            if let Val::Vaddr(base) = i {
-                                if s.heap[base as usize] == Val::Vsize(size){
-                                    i = Val::Vaddr(to_space.len());
-                                    to_space.push(s.heap[base as usize].clone());
-                                    next += size;    
-                                    // println!("{:?}", next);
-                                    //to_space.push(heap_add.clone())
-                                }
-                                // else {
-                                //     panic!("heap[base] is not equal to Vsize(size)");
-                                // }
-                            }
-                            if let Val::Vsize(S) = i{
-                                scan += 1;
-                            } 
-
+                    if num as usize + s.heap.len() as usize > 1024
+                    {
+                        garbage_collector(s);
+                        if num as usize + s.heap.len() as usize > 1024{
+                            panic!("This is bigger then 1024 vals which is not allowed");
                         }
-
+                    }
+                    
+                    s.stack.push(Val::Vaddr(s.heap.len() as usize));
+                    s.heap.push(Val::Vsize(num));
+                    for x in 0..num {
+                    	let vinit = temp2.clone();
+                        s.heap.push(vinit);
                     }
                 }
+                _    => panic!("AHAHAHAHA"),
+            }
 
             },
             Instr::Set => {
@@ -599,21 +498,44 @@ fn main() {
 
             },
             Instr::Ret => {
-                let cur_fp = s.fp;
-                let vret = s.stack.pop().unwrap();
-                //let mut prev_pc = 0;
-                match s.stack.pop().unwrap(){
-                    Val::Vloc(num) =>{
-                        s.pc = num;
-                    },
-                    _ => panic!("ret failed"),
-                }
-                let caller_fp = s.stack.pop().unwrap();
-                while s.stack.len() > s.fp as usize {
-                    s.stack.pop();
+            	let vret = s.stack.pop().unwrap();
+            let caller_pc = s.stack.pop().unwrap();
+            let caller_fp = s.stack.pop().unwrap();
+            let _callee_pc = s.pc;
+            let callee_fp = s.fp;
+            match caller_pc {
+                Val::Vloc(x) => s.pc = x,
+                Val::Vi32(y) => s.pc = y as u32,
+
+                _ => panic!("Not the Vals above"),
+            }
+            match caller_fp {
+                Val::Vloc(x) => s.fp = x,
+                Val::Vi32(y) => s.fp = y as u32,
+
+                _ => panic!("Not the Vals above"),
+            }
+            while s.stack.len() != callee_fp as usize
+            {
+                s.stack.pop();
+            }
+            s.stack.push(vret);
+
+                // let cur_fp = s.fp;
+                // let vret = s.stack.pop().unwrap();
+                // //let mut prev_pc = 0;
+                // match s.stack.pop().unwrap(){
+                //     Val::Vloc(num) =>{
+                //         s.pc = num;
+                //     },
+                //     _ => panic!("ret failed"),
+                // }
+                // let caller_fp = s.stack.pop().unwrap();
+                // while s.stack.len() > s.fp as usize {
+                //     s.stack.pop();
                     
-                }
-                s.stack.push(vret);
+                // }
+                // s.stack.push(vret);
             },
             Instr::Branch => {
                 let target = s.stack.pop().unwrap();
@@ -636,18 +558,105 @@ fn main() {
             },
             Instr::Halt => s.halt = true,
         }
-       // println!("{}, next instr = {:?}", show_state(&s), prog[s.pc]) 
-             
+
+}
+pub fn garbage_collector(s: &mut State){
+   //println!("GC start: {}", s.heap.len());
+    let mut next = 0;
+    let mut scan = 0;
+    let mut to_heap: Vec<Val>  = Vec::with_capacity(1024);  
+    //Loop looking for Vaddr within the stack
+    for num in 0..s.stack.len(){                                //First pass of copy collection, getting values from the stack
+        if let Val::Vaddr(base) = s.stack[num] {               
+            if let Val::Vsize(size) = &s.heap[base] { 
+                println!("Size: {}", size); 
+                s.stack[num] = Val::Vaddr(next);
+                for copy in base..(base + *size as usize + 1){
+                    to_heap.push(s.heap[copy].clone());
+                }
+            next += *size as usize + 1;
+            } 
+        }
     }
+    let mut stored_addresses: HashMap<usize, usize> = HashMap::new();
+    while scan != next{                                         //Second pass of the copy collection, allocating the rest of arrays
+    if let Val::Vaddr(base) = to_heap[scan as usize]{           //onto the To_Heap from the From_Heap
+        if let Some(&number) = stored_addresses.get(&base){
+            to_heap[scan as usize] = Val::Vaddr(number);
+        }else{
+            if let Val::Vsize(size) = &s.heap[base]{
+                for copy in base..(base+(*size as usize)+1){
+                    to_heap.push(s.heap[copy].clone());
+                }
+                next += *size as usize;
+                stored_addresses.insert(base, scan);
+            }
+        } 
+    }
+    scan += 1;
+    }
+    s.heap = to_heap;
+    //println!("GC end: {}", s.heap.len());
+}
+
+fn main() {
+
+    
+    let args: Vec<_> = env::args().collect();
+    let mut file = String::new();
+    let file = args[1].to_string();
+
+
+    let mut binvec: Vec<u8> = fs::read(file).unwrap(); // values from .o file 
+    let mut prog: Vec<Instr> = Vec::new();// new vec to store instructions
+    let mut byte_iterator = binvec.iter();
+    let prog_len = <u32 as FromBin>::from_bin(byte_iterator.by_ref()); // first 4 bytes
+
+    let mut to_space: Vec<Val> = Vec::new();
+    let mut from_space: Vec<Val> = Vec::new();
+
+    //let mut ht: Val = HashMap::new();
+    
+        let mut s = State{halt: false, pc:0, fp:0, stack: Vec::new(), heap: Vec::new(), program: prog};
+
+    for i in 0..prog_len
+    {
+
+     s.program.push(Instr::from_bin(byte_iterator.by_ref()));//pushes list of instr
+    //println!("{:?}", byte_iterator.by_ref());
+
+    }
+
+    
+    //println!("{:?}", prog);
+    //run(&mut init_state,  &prog);// execution loop
+
+    
+    'mainloop:loop { 
+        if s.halt{break 'mainloop}
+        let mut pc = s.pc;
+        s.pc = pc + 1;
+        //println!("{:?}", s.program.len() );
+        //println!("{:?}", pc);
+        
+        if (pc as usize) >= s.program.len(){
+            panic!("pc is out to bounds");
+        }
+        let i = &s.program[pc as usize].clone();
+        instr(i, &mut s);
+       }
+		// s.program.push(Instr::)             
+  //   }
     let mut output = s.stack.pop().unwrap();
     //s.stack.read_to_string(&mut output);
-    //let output: String = s.stack.into_iter().map(|i| i.to_string()).collect::<String>();
+  //   //let output: String = s.stack.into_iter().map(|i| i.to_string()).collect::<String>();
      print!("{:?}", output);
 
     // for p in prog
     // {
     //      println!("{:?}",p );//prints list of instr
     // }
+
 
 
 
