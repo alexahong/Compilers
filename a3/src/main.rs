@@ -386,23 +386,23 @@ pub fn instr( i: &Instr, s: &mut State)
             },
 
             Instr::Alloc => {
-               let temp2 = s.stack.pop().unwrap(); //vinit
-            let temp1 = s.stack.pop().unwrap(); //Vi32(size)
-            match temp1 {
+            let init = s.stack.pop().unwrap(); //vinit
+            let vsize = s.stack.pop().unwrap(); //Vi32(size)
+            match vsize {
                 Val::Vi32(num) =>{
                     
-                    if num as usize + s.heap.len() as usize > 1024
+                    if num as usize + s.heap.len() as usize > MAX_HEAP_SIZE as usize
                     {
                         garbage_collector(s);
-                        if num as usize + s.heap.len() as usize > 1024{
-                            panic!("This is bigger then 1024 vals which is not allowed");
-                        }
+                        // if num as usize + s.heap.len() as usize > MAX_HEAP_SIZE as usize{
+                        //     panic!("This is bigger then 1024 vals which is not allowed");
+                        // }
                     }
                     
                     s.stack.push(Val::Vaddr(s.heap.len() as usize));
                     s.heap.push(Val::Vsize(num));
                     for x in 0..num {
-                    	let vinit = temp2.clone();
+                    	let vinit = init.clone();
                         s.heap.push(vinit);
                     }
                 }
@@ -461,8 +461,8 @@ pub fn instr( i: &Instr, s: &mut State)
             },
             Instr::Var(va) => {
                 let n = va;
-                if s.fp + va > s.stack.len() as u32{
-                    panic!("out of range");
+                if s.fp + n > s.stack.len() as u32{
+                    panic!("out of range var");
                 }
                 else{
                     // s.stack.push(s.stack[s.fp + (va as u32)]);
@@ -470,73 +470,68 @@ pub fn instr( i: &Instr, s: &mut State)
                      s.stack.push(n2);
                 }
             },
-            Instr::Store(st) => {
-                let vnew = st;
-                if s.fp + st > s.stack.len() as u32{
-                    panic!("out of range");
-                }
-                else{
-                   let v = s.stack.pop().unwrap();
-                //    s.stack[s.fp + (st as u32)] = v;
-                 s.stack[(s.fp as usize) + *vnew as usize] = v;
-                }
-            },
+             Instr::Store(v)         =>{
+             if (s.fp + v) < (s.stack.len() as u32) {
+                s.stack[(s.fp+v) as usize] = s.stack.pop().unwrap();
+            }else{
+                panic!("Index out of range!");
+            }
+        },
+
             Instr::SetFrame(vloc) => {
                 s.stack.push(Val::Vloc(*vloc));
-                s.fp = (s.stack.len() as u32) - vloc -1;
+                s.fp = (s.stack.len() as u32) - vloc - 1;
             },
             Instr::Call => {
                 let target = s.stack.pop().unwrap();
                 //println!("{:?}", target);
-                s.stack.push(Val::Vloc(s.pc));
                 match target {
-                    Val::Vloc(loc) => s.pc = loc,
-                    //Val::
+                    Val::Vloc(loc) =>
+                    {
+                    s.stack.push(Val::Vloc(s.pc));
+
+                     s.pc = loc;
+                    }
                     _ => panic!("oh no, no location"),
                 }
 
 
             },
             Instr::Ret => {
-            	let vret = s.stack.pop().unwrap();
-            let caller_pc = s.stack.pop().unwrap();
-            let caller_fp = s.stack.pop().unwrap();
-            let _callee_pc = s.pc;
-            let callee_fp = s.fp;
-            match caller_pc {
-                Val::Vloc(x) => s.pc = x,
-                Val::Vi32(y) => s.pc = y as u32,
 
-                _ => panic!("Not the Vals above"),
-            }
-            match caller_fp {
-                Val::Vloc(x) => s.fp = x,
-                Val::Vi32(y) => s.fp = y as u32,
-
-                _ => panic!("Not the Vals above"),
-            }
-            while s.stack.len() != callee_fp as usize
-            {
-                s.stack.pop();
-            }
-            s.stack.push(vret);
-
-                // let cur_fp = s.fp;
-                // let vret = s.stack.pop().unwrap();
-                // //let mut prev_pc = 0;
-                // match s.stack.pop().unwrap(){
-                //     Val::Vloc(num) =>{
-                //         s.pc = num;
-                //     },
-                //     _ => panic!("ret failed"),
-                // }
-                // let caller_fp = s.stack.pop().unwrap();
-                // while s.stack.len() > s.fp as usize {
-                //     s.stack.pop();
+              
+                let vret = s.stack.pop().unwrap();
+                let caller_pc = s.stack.pop().unwrap();
+                let caller_fp = s.stack.pop().unwrap();
+  				let cur_fp = s.fp;
+                let cur_pc = s.pc;
+                match caller_pc{
+                    Val::Vloc(num) =>
+                        s.pc = num,
+                    Val::Vi32(num2) =>
+                       	s.pc = num2 as u32,
+                    _=> panic!("incorrect Vals caller_pc"),
+                       
                     
-                // }
-                // s.stack.push(vret);
+                }
+
+    			match caller_fp{
+                    Val::Vloc(num) =>
+                        s.fp = num,
+                    Val::Vi32(num2) =>
+                       	s.fp = num2 as u32,
+                    _=> panic!("incorrect Vals caller_fp"),
+                       
+                    
+                }
+                while s.stack.len() > cur_fp as usize {
+
+                    s.stack.pop();
+                    
+                }
+                s.stack.push(vret);
             },
+
             Instr::Branch => {
                 let target = s.stack.pop().unwrap();
                 let arg = s.stack.pop().unwrap();
@@ -561,13 +556,20 @@ pub fn instr( i: &Instr, s: &mut State)
 
 }
 pub fn garbage_collector(s: &mut State){
-   //println!("GC start: {}", s.heap.len());
+   println!("GC start: {}", s.heap.len());
     let mut next = 0;
     let mut scan = 0;
-    let mut to_heap: Vec<Val>  = Vec::with_capacity(1024);  
+    let mut to_heap: Vec<Val>  = Vec::with_capacity(MAX_HEAP_SIZE as usize);  
     //Loop looking for Vaddr within the stack
-    for num in 0..s.stack.len(){                                //First pass of copy collection, getting values from the stack
-        if let Val::Vaddr(base) = s.stack[num] {               
+///s.stack = 575
+
+    for num in 0..s.stack.len(){   
+    	                           // println!("stack: {:?}",s.stack); 
+
+                             //First pass of copy collection, getting values from the stack
+        if let Val::Vaddr(base) = s.stack[num] {    
+                        println!("Next: {}", next); 
+           
             if let Val::Vsize(size) = &s.heap[base] { 
                 println!("Size: {}", size); 
                 s.stack[num] = Val::Vaddr(next);
@@ -575,6 +577,7 @@ pub fn garbage_collector(s: &mut State){
                     to_heap.push(s.heap[copy].clone());
                 }
             next += *size as usize + 1;
+            println!(" next value:{:?}",next );
             } 
         }
     }
@@ -596,7 +599,7 @@ pub fn garbage_collector(s: &mut State){
     scan += 1;
     }
     s.heap = to_heap;
-    //println!("GC end: {}", s.heap.len());
+    println!("GC end: {}", s.heap.len());
 }
 
 fn main() {
@@ -644,7 +647,7 @@ fn main() {
         }
         let i = &s.program[pc as usize].clone();
         instr(i, &mut s);
-       }
+       } //end of mainloop
 		// s.program.push(Instr::)             
   //   }
     let mut output = s.stack.pop().unwrap();
