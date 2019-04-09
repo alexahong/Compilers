@@ -82,7 +82,14 @@ tokens = (
 'FUNPTR',
 'CALL',
 'F',#
-'ID'
+'ID',
+'ARROW',
+'WHITESPACE',
+'FUN',
+'ARRAY',
+'BOOL',
+'I32',
+'UNIT',
 )
  
  # Regular expression rules for simple tokens
@@ -102,6 +109,7 @@ t_LT = r'\<'
 t_ASSIGN = r'\='
 t_SEP = r'\%'
 t_VAR = r'[a-zA-Z_][a-zA-Z0-9_]*'
+t_ARROW = r'\->'
 
 reserved = {
     'lam' : 'LAM',
@@ -114,6 +122,11 @@ reserved = {
     'funptr' : 'FUNPTR',
     'call' : 'CALL',
     'app' : 'APP',
+    'fun' : 'FUN',
+    'array' : 'ARRAY',
+    'bool' : 'BOOL',
+    'i32' : 'I32',
+    'unit' : 'UNIT',
 }
 
 def t_ID(t):
@@ -135,6 +148,8 @@ def t_NUMBER(t):
 def t_newline(t):
     r'\n+'
     t.lexer.lineno += len(t.value)
+
+    
  
  # A string containing ignored characters (spaces and tabs)
 t_ignore  = ' \t'
