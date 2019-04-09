@@ -51,24 +51,42 @@
 import lex as lex
 import yacc as yacc 
  # List of token names.   This is always required
-tokens = (
-'NUMBER',
-'PLUS',
-'MINUS',
-'TIMES',
-'DIVIDE',
-'LPAREN',
-'RPAREN',
-)
+class CalcLexer(Lexer): 
+    tokens = (
+    'NUMBER',
+    'PLUS',
+    'MINUS',
+    'TIMES',
+    'DIVIDE',
+    'LPAREN',
+    'RPAREN',
+    'RCOMMENT',
+    'LCOMMENT',
+    'TRUE',
+    'FALSE',
+    'TT',
+    'EQUAL',
+    'LT'
+    )
  
  # Regular expression rules for simple tokens
 t_PLUS    = r'\+'
-t_MINUS   = r'-'
+t_MINUS   = r'\-'
 t_TIMES   = r'\*'
-t_DIVIDE  = r'/'
+t_DIVIDE  = r'\/'
 t_LPAREN  = r'\('
 t_RPAREN  = r'\)'
+#t_RCOMMENT = r'\*/'
+#t_LCOMMENT = r'\/*'
+t_TRUE = r'\true'
+t_FALSE = r'\false'
+# t_tt = r'tt'
+t_EQUAL = r'\=='
+t_LT = r'\<'
  
+
+# def t_Comment(t): 
+#     print('stuff')
  # A regular expression rule with some action code
 def t_NUMBER(t):
     r'\d+'
@@ -82,6 +100,7 @@ def t_newline(t):
  
  # A string containing ignored characters (spaces and tabs)
 t_ignore  = ' \t'
+t_ignore_COMMENT = r'\#.*'
  
  # Error handling rule
 def t_error(t):
