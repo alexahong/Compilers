@@ -51,23 +51,27 @@
 import lex as lex
 import yacc as yacc 
  # List of token names.   This is always required
-class CalcLexer(Lexer): 
-    tokens = (
-    'NUMBER',
-    'PLUS',
-    'MINUS',
-    'TIMES',
-    'DIVIDE',
-    'LPAREN',
-    'RPAREN',
-    'RCOMMENT',
-    'LCOMMENT',
-    'TRUE',
-    'FALSE',
-    'TT',
-    'EQUAL',
-    'LT'
-    )
+# class CalcLexer(Lexer): 
+tokens = (
+'NUMBER',
+'PLUS',
+'MINUS',
+'TIMES',
+'DIVIDE',
+'LPAREN',
+'RPAREN',
+'RCOMMENT',
+'LCOMMENT',
+'TRUE',
+'FALSE',
+'TT',
+'EQUAL',
+'LT',
+'ASSIGN',
+'MOD',
+'LAM',
+'STR',
+)
  
  # Regular expression rules for simple tokens
 t_PLUS    = r'\+'
@@ -83,8 +87,12 @@ t_FALSE = r'\false'
 # t_tt = r'tt'
 t_EQUAL = r'\=='
 t_LT = r'\<'
+t_ASSIGN = r'\='
+t_MOD = r'\%'
+t_STR = r'[a-zA-Z_][a-zA-Z0-9_]*'
  
-
+# def t_LAM(t):
+#     print 'do lamda stuff'
 # def t_Comment(t): 
 #     print('stuff')
  # A regular expression rule with some action code
@@ -116,9 +124,12 @@ data = '''
 3 + 4 * 10
 + -20 *2
 '''
+f = open("applam.gpy", "r")
+file_contents = f.read()
+
 
 # Give the lexer some input
-lexer.input(data)
+lexer.input(file_contents)
 
 # Tokenize
 while True:
