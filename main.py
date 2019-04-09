@@ -50,6 +50,7 @@
 
 import lex as lex
 import yacc as yacc 
+import sys
  # List of token names.   This is always required
 # class CalcLexer(Lexer): 
 tokens = (
@@ -68,9 +69,20 @@ tokens = (
 'EQUAL',
 'LT',
 'ASSIGN',
-'MOD',
-'LAM',
-'STR',
+'APP',
+'SEP',
+'LAM',#
+'VAR',
+'LET',
+'SEQ',
+'ALLOC',
+'SET',
+'GET',
+'COND',
+'FUNPTR',
+'CALL',
+'F',#
+'ID'
 )
  
  # Regular expression rules for simple tokens
@@ -88,9 +100,27 @@ t_FALSE = r'\false'
 t_EQUAL = r'\=='
 t_LT = r'\<'
 t_ASSIGN = r'\='
-t_MOD = r'\%'
-t_STR = r'[a-zA-Z_][a-zA-Z0-9_]*'
- 
+t_SEP = r'\%'
+t_VAR = r'[a-zA-Z_][a-zA-Z0-9_]*'
+
+reserved = {
+    'lam' : 'LAM',
+    'cond' : 'COND',
+    'let' : 'LET',
+    'seq' : 'SEQ',
+    'alloc' : 'ALLOC',
+    'set' : 'SET',
+    'get' : 'GET',
+    'funptr' : 'FUNPTR',
+    'call' : 'CALL',
+    'app' : 'APP',
+}
+
+def t_ID(t):
+    r'[a-zA-Z_][a-zA-Z0-9_]*'
+    t.type = reserved.get(t.value,'ID')
+    return t        
+
 # def t_LAM(t):
 #     print 'do lamda stuff'
 # def t_Comment(t): 
@@ -124,7 +154,8 @@ data = '''
 3 + 4 * 10
 + -20 *2
 '''
-f = open("applam.gpy", "r")
+file = sys.argv[1]
+f = open(file, "r")
 file_contents = f.read()
 
 
