@@ -48,8 +48,7 @@
 # Programs
 # prog ::= fn1 fn2 ... fnM % e
 
-import lex as lex
-import yacc as yacc 
+import ply.lex as lex
 import sys
  # List of token names.   This is always required
 # class CalcLexer(Lexer): 
@@ -166,25 +165,24 @@ def t_error(t):
 lexer = lex.lex()
  
 
- # Test it out
-data = '''
-3 + 4 * 10
-+ -20 *2
-'''
+
 file = sys.argv[1]
 f = open(file, "r")
 file_contents = f.read()
 
-
+lexer = lex.lex()
 # Give the lexer some input
 lexer.input(file_contents)
 
-# Tokenize
-while True:
- tok = lexer.token()
- if not tok: 
-     break      # No more input
- print(tok)
+for token in lexer:
+    print "Token:",token
+
+# # Tokenize
+# while True:
+#  tok = lexer.token()
+#  if not tok: 
+#      break      # No more input
+#  print(tok)
 
 
  

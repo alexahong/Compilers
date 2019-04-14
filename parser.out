@@ -10,6 +10,7 @@ Unused terminals:
     FUN
     TRUE
     SET
+    RPAREN
     SEQ
     GET
     TT
@@ -20,9 +21,13 @@ Unused terminals:
     ARRAY
     ASSIGN
     ALLOC
+    DIVIDE
     F
     I32
+    NUMBER
+    LPAREN
     VAR
+    TIMES
     ID
     UNIT
     LAM
@@ -37,15 +42,6 @@ Grammar
 Rule 0     S' -> expression
 Rule 1     expression -> expression PLUS term
 Rule 2     expression -> expression MINUS term
-Rule 3     expression -> term
-Rule 4     term -> term TIMES factor
-Rule 5     term -> term DIVIDE factor
-Rule 6     term -> factor
-Rule 7     factor -> NUMBER
-Rule 8     factor -> LPAREN expression RPAREN
-Rule 9     expression -> PRINT LPAREN STRING RPAREN
-Rule 10    expression -> PRINT LPAREN expression RPAREN
-Rule 11    expression -> QUIT
 
 Terminals, with rules where they appear
 
@@ -57,7 +53,7 @@ ASSIGN               :
 BOOL                 : 
 CALL                 : 
 COND                 : 
-DIVIDE               : 5
+DIVIDE               : 
 EQUAL                : 
 F                    : 
 FALSE                : 
@@ -69,17 +65,17 @@ ID                   :
 LAM                  : 
 LCOMMENT             : 
 LET                  : 
-LPAREN               : 8 9 10
+LPAREN               : 
 LT                   : 
 MINUS                : 2
-NUMBER               : 7
+NUMBER               : 
 PLUS                 : 1
 RCOMMENT             : 
-RPAREN               : 8 9 10
+RPAREN               : 
 SEP                  : 
 SEQ                  : 
 SET                  : 
-TIMES                : 4
+TIMES                : 
 TRUE                 : 
 TT                   : 
 UNIT                 : 
@@ -89,10 +85,6 @@ error                :
 
 Nonterminals, with rules where they appear
 
-PRINT                : 9 10
-QUIT                 : 11
-STRING               : 9
-expression           : 1 2 8 10 0
-factor               : 4 5 6
-term                 : 1 2 3 4 5
+expression           : 1 2 0
+term                 : 1 2
 
