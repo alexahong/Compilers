@@ -6,9 +6,9 @@ _tabversion = '3.10'
 
 _lr_method = 'LALR'
 
-_lr_signature = 'ALLOC APP ARRAY ARROW ASSIGN BOOL CALL COND DIVIDE EQUAL F FALSE FUN FUNPTR GET I32 ID LAM LCOMMENT LET LPAREN LT MINUS NUMBER PLUS RCOMMENT RPAREN SEP SEQ SET TIMES TRUE TT UNIT VAR WHITESPACEexpression : expression PLUS termexpression : expression MINUS termexpression : termterm : term TIMES factorterm : term DIVIDE factorterm : factorfactor : NUMBERfactor : LPAREN expression RPAREN'
+_lr_signature = 'ALLOC APP ARRAY ARROW ASSIGN BOOL CALL COND DIVIDE EQUAL F FALSE FUN FUNPTR GET I32 ID LAM LCOMMENT LET LPAREN LT MINUS NUMBER PLUS RCOMMENT RPAREN SEP SEQ SET TIMES TRUE TT UNIT VAR WHITESPACEexpression : expression PLUS term\n                   | expression MINUS term\n        term       : term TIMES factor\n                   | term DIVIDE factorexpression : termterm : factorfactor : NUMBERfactor : LPAREN expression RPAREN'
     
-_lr_action_items = {'RPAREN':([1,2,4,8,11,12,13,14,15,],[-3,-7,-6,13,-5,-4,-8,-1,-2,]),'DIVIDE':([1,2,4,11,12,13,14,15,],[6,-7,-6,-5,-4,-8,6,6,]),'NUMBER':([0,3,6,7,9,10,],[2,2,2,2,2,2,]),'TIMES':([1,2,4,11,12,13,14,15,],[7,-7,-6,-5,-4,-8,7,7,]),'PLUS':([1,2,4,5,8,11,12,13,14,15,],[-3,-7,-6,9,9,-5,-4,-8,-1,-2,]),'LPAREN':([0,3,6,7,9,10,],[3,3,3,3,3,3,]),'MINUS':([1,2,4,5,8,11,12,13,14,15,],[-3,-7,-6,10,10,-5,-4,-8,-1,-2,]),'$end':([1,2,4,5,11,12,13,14,15,],[-3,-7,-6,0,-5,-4,-8,-1,-2,]),}
+_lr_action_items = {'NUMBER':([0,5,6,7,8,9,],[4,4,4,4,4,4,]),'LPAREN':([0,5,6,7,8,9,],[5,5,5,5,5,5,]),'$end':([1,2,3,4,11,12,13,14,15,],[0,-5,-6,-7,-1,-2,-3,-4,-8,]),'PLUS':([1,2,3,4,10,11,12,13,14,15,],[6,-5,-6,-7,6,-1,-2,-3,-4,-8,]),'MINUS':([1,2,3,4,10,11,12,13,14,15,],[7,-5,-6,-7,7,-1,-2,-3,-4,-8,]),'RPAREN':([2,3,4,10,11,12,13,14,15,],[-5,-6,-7,15,-1,-2,-3,-4,-8,]),'TIMES':([2,3,4,11,12,13,14,15,],[8,-6,-7,8,8,-3,-4,-8,]),'DIVIDE':([2,3,4,11,12,13,14,15,],[9,-6,-7,9,9,-3,-4,-8,]),}
 
 _lr_action = {}
 for _k, _v in _lr_action_items.items():
@@ -17,7 +17,7 @@ for _k, _v in _lr_action_items.items():
       _lr_action[_x][_k] = _y
 del _lr_action_items
 
-_lr_goto_items = {'term':([0,3,9,10,],[1,1,14,15,]),'expression':([0,3,],[5,8,]),'factor':([0,3,6,7,9,10,],[4,4,11,12,4,4,]),}
+_lr_goto_items = {'expression':([0,5,],[1,10,]),'term':([0,5,6,7,],[2,2,11,12,]),'factor':([0,5,6,7,8,9,],[3,3,3,3,13,14,]),}
 
 _lr_goto = {}
 for _k, _v in _lr_goto_items.items():
@@ -27,12 +27,12 @@ for _k, _v in _lr_goto_items.items():
 del _lr_goto_items
 _lr_productions = [
   ("S' -> expression","S'",1,None,None,None),
-  ('expression -> expression PLUS term','expression',3,'p_expression_plus','main.py',133),
-  ('expression -> expression MINUS term','expression',3,'p_expression_minus','main.py',137),
-  ('expression -> term','expression',1,'p_expression_term','main.py',141),
-  ('term -> term TIMES factor','term',3,'p_term_times','main.py',145),
-  ('term -> term DIVIDE factor','term',3,'p_term_div','main.py',149),
-  ('term -> factor','term',1,'p_term_factor','main.py',153),
-  ('factor -> NUMBER','factor',1,'p_factor_num','main.py',157),
-  ('factor -> LPAREN expression RPAREN','factor',3,'p_factor_expr','main.py',161),
+  ('expression -> expression PLUS term','expression',3,'p_binary_operators','parser.py',8),
+  ('expression -> expression MINUS term','expression',3,'p_binary_operators','parser.py',9),
+  ('term -> term TIMES factor','term',3,'p_binary_operators','parser.py',10),
+  ('term -> term DIVIDE factor','term',3,'p_binary_operators','parser.py',11),
+  ('expression -> term','expression',1,'p_expression_term','parser.py',30),
+  ('term -> factor','term',1,'p_term_factor','parser.py',42),
+  ('factor -> NUMBER','factor',1,'p_factor_num','parser.py',46),
+  ('factor -> LPAREN expression RPAREN','factor',3,'p_factor_expr','parser.py',50),
 ]

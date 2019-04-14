@@ -174,15 +174,13 @@ lexer = lex.lex()
 # Give the lexer some input
 lexer.input(file_contents)
 
-for token in lexer:
-    print "Token:",token
 
-# # Tokenize
-# while True:
-#  tok = lexer.token()
-#  if not tok: 
-#      break      # No more input
-#  print(tok)
+# Tokenize
+while True:
+ tok = lexer.token()
+ if not tok: 
+     break      # No more input
+ print(tok)
 
 
  
