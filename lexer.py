@@ -48,8 +48,8 @@
 # Programs
 # prog ::= fn1 fn2 ... fnM % e
 
-import lex as lex
-import yacc as yacc 
+import ply.lex as lex
+import ply.yacc as yacc 
 import sys
  # List of token names.   This is always required
 # class CalcLexer(Lexer): 
