@@ -1,0 +1,98 @@
+Created by PLY version 3.11 (http://www.dabeaz.com/ply)
+
+Unused terminals:
+
+    LCOMMENT
+    ARROW
+    EQUAL
+    FUNPTR
+    COND
+    FUN
+    TRUE
+    SET
+    SEQ
+    GET
+    TT
+    CALL
+    RCOMMENT
+    LT
+    BOOL
+    ARRAY
+    ASSIGN
+    ALLOC
+    F
+    I32
+    VAR
+    ID
+    UNIT
+    LAM
+    FALSE
+    WHITESPACE
+    APP
+    SEP
+    LET
+
+Grammar
+
+Rule 0     S' -> expression
+Rule 1     expression -> expression PLUS term
+Rule 2     expression -> expression MINUS term
+Rule 3     expression -> term
+Rule 4     term -> term TIMES factor
+Rule 5     term -> term DIVIDE factor
+Rule 6     term -> factor
+Rule 7     factor -> NUMBER
+Rule 8     factor -> LPAREN expression RPAREN
+Rule 9     expression -> PRINT LPAREN STRING RPAREN
+Rule 10    expression -> PRINT LPAREN expression RPAREN
+Rule 11    expression -> QUIT
+
+Terminals, with rules where they appear
+
+ALLOC                : 
+APP                  : 
+ARRAY                : 
+ARROW                : 
+ASSIGN               : 
+BOOL                 : 
+CALL                 : 
+COND                 : 
+DIVIDE               : 5
+EQUAL                : 
+F                    : 
+FALSE                : 
+FUN                  : 
+FUNPTR               : 
+GET                  : 
+I32                  : 
+ID                   : 
+LAM                  : 
+LCOMMENT             : 
+LET                  : 
+LPAREN               : 8 9 10
+LT                   : 
+MINUS                : 2
+NUMBER               : 7
+PLUS                 : 1
+RCOMMENT             : 
+RPAREN               : 8 9 10
+SEP                  : 
+SEQ                  : 
+SET                  : 
+TIMES                : 4
+TRUE                 : 
+TT                   : 
+UNIT                 : 
+VAR                  : 
+WHITESPACE           : 
+error                : 
+
+Nonterminals, with rules where they appear
+
+PRINT                : 9 10
+QUIT                 : 11
+STRING               : 9
+expression           : 1 2 8 10 0
+factor               : 4 5 6
+term                 : 1 2 3 4 5
+

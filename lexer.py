@@ -71,7 +71,7 @@ tokens = (
 'ASSIGN',
 'APP',
 'SEP',
-'LAM',#
+'LAM',
 'VAR',
 'LET',
 'SEQ',
@@ -81,7 +81,7 @@ tokens = (
 'COND',
 'FUNPTR',
 'CALL',
-'F',#
+'F',
 'ID',
 'ARROW',
 'WHITESPACE',
@@ -128,6 +128,8 @@ reserved = {
     'i32' : 'I32',
     'unit' : 'UNIT',
 }
+
+
 
 def t_ID(t):
     r'[a-zA-Z_][a-zA-Z0-9_]*'
@@ -183,3 +185,6 @@ while True:
  if not tok: 
      break      # No more input
  print(tok)
+
+
+ 
