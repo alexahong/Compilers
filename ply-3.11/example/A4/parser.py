@@ -113,7 +113,11 @@ def t_error(t):
 
 
 sep = False
-
+print("setframe 0")
+print("push Lmain")
+print("call")
+print("halt")
+print("Lmain:")
 def parser(lexer, current_token, rp_track, lp_track):
 
   if current_token.type == 'SEP':
