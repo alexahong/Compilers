@@ -171,17 +171,7 @@ while True:
   tok = lexer.token()
   if not tok: 
       break 
-  print(tok)
+  #print(tok)
   parser(lexer, tok, rp_track, lp_track)
 
-
-# while 1:
-#     try:
-#         s = raw_input('calc > ')
-#     except EOFError:
-#         break
-#     if not s:
-#         continue
-#     yacc.parse(s)
-
-#print("ret")
+print("ret")
