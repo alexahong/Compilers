@@ -2,6 +2,26 @@ import ply.yacc as yacc
 import ply.lex as lex
 import sys
 
+reserved = {
+    'lam' : 'LAM',
+    'cond' : 'COND',
+    'let' : 'LET',
+    'seq' : 'SEQ',
+    'alloc' : 'ALLOC',
+    'set' : 'SET',
+    'get' : 'GET',
+    'funptr' : 'FUNPTR',
+    'call' : 'CALL',
+    'app' : 'APP',
+    'fun' : 'FUN',
+    'array' : 'ARRAY',
+    'bool' : 'BOOL',
+    'i32' : 'I32',
+    'unit' : 'UNIT',
+    'true' : 'TRUE',
+    'false' : 'FALSE',
+
+}
 
 tokens = (
 'NUMBER',
@@ -51,8 +71,7 @@ t_LPAREN  = r'\('
 t_RPAREN  = r'\)'
 #t_RCOMMENT = r'\*/'
 #t_LCOMMENT = r'\/*'
-t_TRUE = r'\true'
-t_FALSE = r'\false'
+
 # t_tt = r'tt'
 t_EQUAL = r'\=='
 t_LT = r'\<'
@@ -61,23 +80,6 @@ t_SEP = r'\%'
 t_VAR = r'[a-zA-Z_][a-zA-Z0-9_]*'
 t_ARROW = r'\->'
 
-reserved = {
-    'lam' : 'LAM',
-    'cond' : 'COND',
-    'let' : 'LET',
-    'seq' : 'SEQ',
-    'alloc' : 'ALLOC',
-    'set' : 'SET',
-    'get' : 'GET',
-    'funptr' : 'FUNPTR',
-    'call' : 'CALL',
-    'app' : 'APP',
-    'fun' : 'FUN',
-    'array' : 'ARRAY',
-    'bool' : 'BOOL',
-    'i32' : 'I32',
-    'unit' : 'UNIT',
-}
 
 
 
@@ -86,11 +88,7 @@ def t_ID(t):
     t.type = reserved.get(t.value,'ID')
     return t        
 
-# def t_LAM(t):
-#     print 'do lamda stuff'
-# def t_Comment(t): 
-#     print('stuff')
- # A regular expression rule with some action code
+
 def t_NUMBER(t):
     r'\d+'
     t.value = int(t.value)    
@@ -105,32 +103,22 @@ def t_newline(t):
  
  # A string containing ignored characters (spaces and tabs)
 t_ignore  = ' \t'
-t_ignore_COMMENT = r'\#.*'
+#t_ignore_COMMENT = r'\#.*'
  
  # Error handling rule
 def t_error(t):
     print("Illegal character '%s'" % t.value[0])
     t.lexer.skip(1)
  
- # Build the lexer
-lexer = lex.lex()
- 
 
 
-file = sys.argv[1]
-f = open(file, "r")
-file_contents = f.read()
-
-lexer = lex.lex()
-# Give the lexer some input
-lexer.input(file_contents)
-
+sep = False
 
 def parser(lexer, current_token, rp_track, lp_track):
 
-  if current_token.type == 'MOD':
+  if current_token.type == 'SEP':
     rp_track = rp_track + 0
-
+    sep = True
 
   elif current_token.type == 'PLUS':
     tok1 = lexer.token()
@@ -159,19 +147,31 @@ def parser(lexer, current_token, rp_track, lp_track):
 
 
 
-# Build the parser
-parser = yacc.yacc()
+
+lexer = lex.lex()
+
+file = sys.argv[1]
+f = open(file, "r")
+file_contents = f.read()
 
 
-# Use this if you want to build the parser using SLR instead of LALR
-# yacc.yacc(method="SLR")
+
+# Give the lexer some input
+lexer.input(file_contents)
+
+
+
+
+rp_track = 0
+lp_track = 0
+
+
 
 while True:
-  try:
-      s = raw_input('calc > ')
-  except EOFError:
-      break
-  if not s: continue
-  result = parser.parse(s)
-  print(result)
- 
+ tok = lexer.token()
+ if not tok: 
+    break 
+parser(lexer, tok, rp_track, lp_track)
+
+
+#print("ret")
