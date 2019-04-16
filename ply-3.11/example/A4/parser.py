@@ -227,11 +227,13 @@ def parser(lexer, current_token, lp_track, rp_track):
   elif current_token.type == 'LET':
     #parses next value to check that its a variable
     parser(lexer, lexer.token(), lp_track, rp_track)
-
+    print("push undef")
+    return lexer
     #parses next value to get the number
     parser(lexer, lexer.token(), lp_track, rp_track)
     parser(lexer, lexer.token(), lp_track, rp_track)
-      print("push " + str(val.value))
+    print("var " + str(val.value))
+    #return lexer
 
     
 
@@ -261,8 +263,7 @@ while True:
   #checking to make sure that parenthesis match, shoud be zero
   if lp_track != rp_track:
     raise Exception("parenthesis don't match")
-  else:
-    print("ret")
+print("ret")
 
 
 
