@@ -104,7 +104,7 @@ def t_newline(t):
  
  # A string containing ignored characters (spaces and tabs)
 t_ignore  = ' \t'
-#t_ignore_COMMENT = r'\#.*'
+t_ignore_COMMENT = r'\#.*'
  
  # Error handling rule
 def t_error(t):
@@ -121,87 +121,87 @@ print("call")
 print("halt")
 print("Lmain:")
 
-def parser(lexer, current_token, lp_track, rp_track):
+def parser(lexer, cur_tok, left_paren, right_paren):
 
-  if current_token.type == 'SEP':
-    lp_track = lp_track + 0
+  if cur_tok.type == 'SEP':
+    left_paren = left_paren + 0
     sep = True
 
-  elif current_token.type == 'PLUS':
-    tok1 = lexer.token()
-    tok2 = lexer.token()
-    print("push "+ str(tok1.value) + "\npush " + str(tok2.value) + '\nbinary +')
+  elif cur_tok.type == 'PLUS':
+    token_1 = lexer.token()
+    token_2 = lexer.token()
+    print("push "+ str(token_1.value) + "\npush " + str(token_2.value) + '\nbinary +')
     return lexer
 
-  elif current_token.type == 'MINUS':
-    tok1 = lexer.token()
-    tok2 = lexer.token()
-    print("push "+ str(tok2.value) + "\npush " + str(tok1.value) + '\nbinary -')
+  elif cur_tok.type == 'MINUS':
+    token_1 = lexer.token()
+    token_2 = lexer.token()
+    print("push "+ str(token_2.value) + "\npush " + str(token_1.value) + '\nbinary -')
     return lexer
 
-  elif current_token.type == 'DIVIDE':
-    tok1 = lexer.token()
-    tok2 = lexer.token()
-    print("push "+ str(tok2.value) + "\npush " + str(tok1.value) + '\nbinary /')
+  elif cur_tok.type == 'DIVIDE':
+    token_1 = lexer.token()
+    token_2 = lexer.token()
+    print("push "+ str(token_2.value) + "\npush " + str(token_1.value) + '\nbinary /')
     return lexer
 
-  elif current_token.type == 'TIMES':
-    tok1 = lexer.token()
-    tok2 = lexer.token()
-    print("push "+ str(tok1.value) + "\npush " + str(tok2.value) + '\nbinary *')
+  elif cur_tok.type == 'TIMES':
+    token_1 = lexer.token()
+    token_2 = lexer.token()
+    print("push "+ str(token_1.value) + "\npush " + str(token_2.value) + '\nbinary *')
     return lexer
 
-  elif current_token.type == 'LPAREN':
-    lp_track = lp_track + 1 
+  elif cur_tok.type == 'LPAREN':
+    left_paren = left_paren + 1 
     return lexer
 
-  elif current_token.type == 'RPAREN':
-    rp_track = rp_track + 1
+  elif cur_tok.type == 'RPAREN':
+    right_paren = right_paren + 1
     return lexer
 
-  elif current_token.type == 'NUMBER':
-    print("push "+ str(current_token.value))
+  elif cur_tok.type == 'NUMBER':
+    print("push "+ str(cur_tok.value))
     return lexer
 
-  elif current_token.type == 'NEG':
-    parser(lexer, lexer.token(), lp_track, rp_track)
+  elif cur_tok.type == 'NEG':
+    parser(lexer, lexer.token(), left_paren, right_paren)
     print("unary neg")
     return lexer
 
-  elif current_token.type == 'SEQ':
-    parser(lexer, lexer.token(), lp_track, rp_track)
-    parser(lexer, lexer.token(), lp_track, rp_track)
+  elif cur_tok.type == 'SEQ':
+    parser(lexer, lexer.token(), left_paren, right_paren)
+    parser(lexer, lexer.token(), left_paren, right_paren)
     return lexer
 
-  elif current_token.type == 'TRUE':
+  elif cur_tok.type == 'TRUE':
     print("push true")
     return lexer
 
-  elif current_token.type == 'FALSE':
+  elif cur_tok.type == 'FALSE':
     print("push false")
     return lexer
 
-  elif current_token.type == 'LT':
-    tok1 = lexer.token()
-    tok2 = lexer.token()
+  elif cur_tok.type == 'LT':
+    token_1 = lexer.token()
+    token_2 = lexer.token()
 
-    if tok1.value < tok2.value:
+    if token_1.value < token_2.value:
       print("push true" + '\nbinary <')
     else:
       print("push false")
     return lexer
 
-  elif current_token.type == 'EQUAL':
-    tok1 = lexer.token()
-    tok2 = lexer.token()
+  elif cur_tok.type == 'EQUAL':
+    token_1 = lexer.token()
+    token_2 = lexer.token()
 
-    if tok1.value == tok2.value:
+    if token_1.value == token_2.value:
       print( "push true" + '\nbinary ==' )
     else:
       print("push false")
       return lexer
 
-  elif current_token.type == 'LCOMMENT':
+  elif cur_tok.type == 'LCOMMENT':
     comment = 0
     while(True):
       tok = lexer.token()
@@ -212,29 +212,33 @@ def parser(lexer, current_token, lp_track, rp_track):
       elif tok.type == 'RCOMMENT' and comment != 1:
           comment = comment - 1
 
-  elif current_token.type == 'ASSIGN':
-    tok1 = lexer.token()
-    tok2 = lexer.token()
-    tok1 = tok2
-    print("push "+ str(tok1.value))
+  elif cur_tok.type == 'ASSIGN':
+    token_1 = lexer.token()
+    token_2 = lexer.token()
+    token_1 = token_2
+    print("push "+ str(token_1.value))
     return lexer
         
-  elif current_token.type == 'LAM':
-    function = lambda fun: current_token.type
+  elif cur_tok.type == 'LAM':
+    function = lambda fun: cur_tok.type
     print( str(function.value))
     return lexer
 
-  elif current_token.type == 'LET':
+  elif cur_tok.type == 'LET':
     #parses next value to check that its a variable
-    parser(lexer, lexer.token(), lp_track, rp_track)
+    parser(lexer, lexer.token(), left_paren, right_paren)
     print("push undef")
     return lexer
     #parses next value to get the number
-    parser(lexer, lexer.token(), lp_track, rp_track)
-    parser(lexer, lexer.token(), lp_track, rp_track)
+    parser(lexer, lexer.token(), left_paren, right_paren)
+    parser(lexer, lexer.token(), left_paren, right_paren)
     print("var " + str(val.value))
-    #return lexer
+    return lexer
 
+  elif cur_tok.type == 'VAR':
+    while(True):
+      return cur_tok.type
+    return lexer
     
 
 
@@ -257,12 +261,9 @@ while True:
       break 
   #print(tok)
   #tracking the left and right paranthesis, should be zero if they match
-  rp_track = 0
-  lp_track = 0
-  parser(lexer, tok, rp_track, lp_track)
-  #checking to make sure that parenthesis match, shoud be zero
-  if lp_track != rp_track:
-    raise Exception("parenthesis don't match")
+  left_paren = 0
+  right_paren = 0
+  parser(lexer, tok, left_paren, right_paren)
 
 print("ret")
 
