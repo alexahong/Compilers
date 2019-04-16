@@ -227,11 +227,13 @@ def parser(lexer, current_token, lp_track, rp_track):
   elif current_token.type == 'LET':
     #parses next value to check that its a variable
     parser(lexer, lexer.token(), lp_track, rp_track)
-
+    print("push undef")
+    return lexer
     #parses next value to get the number
     parser(lexer, lexer.token(), lp_track, rp_track)
     parser(lexer, lexer.token(), lp_track, rp_track)
-      print("push " + str(val.value))
+    print("var " + str(val.value))
+    #return lexer
 
     
 
