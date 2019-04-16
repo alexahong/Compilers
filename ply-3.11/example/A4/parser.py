@@ -261,8 +261,8 @@ while True:
   #checking to make sure that parenthesis match, shoud be zero
   if lp_track != rp_track:
     raise Exception("parenthesis don't match")
-  else:
-    print("ret")
+
+print("ret")
 
 
 
