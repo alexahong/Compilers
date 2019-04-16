@@ -136,13 +136,13 @@ def parser(lexer, current_token, lp_track, rp_track):
   elif current_token.type == 'MINUS':
     tok1 = lexer.token()
     tok2 = lexer.token()
-    print("push "+ str(tok1.value) + "\npush " + str(tok2.value) + '\nbinary -')
+    print("push "+ str(tok2.value) + "\npush " + str(tok1.value) + '\nbinary -')
     return lexer
 
   elif current_token.type == 'DIVIDE':
     tok1 = lexer.token()
     tok2 = lexer.token()
-    print("push "+ str(tok1.value) + "\npush " + str(tok2.value) + '\nbinary /')
+    print("push "+ str(tok2.value) + "\npush " + str(tok1.value) + '\nbinary /')
     return lexer
 
   elif current_token.type == 'TIMES':
@@ -225,9 +225,12 @@ def parser(lexer, current_token, lp_track, rp_track):
     return lexer
 
   elif current_token.type == 'LET':
-    x = parser(lexer, lexer.token(), lp_track, rp_track)
-    if x == lexer.token():
-      val = lexer.token()
+    #parses next value to check that its a variable
+    parser(lexer, lexer.token(), lp_track, rp_track)
+
+    #parses next value to get the number
+    parser(lexer, lexer.token(), lp_track, rp_track)
+    parser(lexer, lexer.token(), lp_track, rp_track)
       print("push " + str(val.value))
 
     
