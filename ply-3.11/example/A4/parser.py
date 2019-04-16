@@ -3,7 +3,7 @@ import ply.lex as lex
 import sys
 
 reserved = {
-'lam' : 'LAM',
+'lam' : 'LAM', #i dont think we need this
 'cond' : 'COND',
 'let' : 'LET',
 'seq' : 'SEQ',
@@ -18,35 +18,34 @@ reserved = {
 'bool' : 'BOOL',
 'i32' : 'I32',
 'unit' : 'UNIT',
-'true' : 'TRUE',
-'false' : 'FALSE',
-'neg' : 'NEG',
-
+'true' : 'TRUE',#
+'false' : 'FALSE',#
+'neg' : 'NEG',#
 }
 
 tokens = (
-'NEG',
-'NUMBER',
-'PLUS',
-'MINUS',
-'TIMES',
-'DIVIDE',
-'LPAREN',
-'RPAREN',
-'LCOMMENT',
-'RCOMMENT',
-'TRUE',
-'FALSE',
+'NEG',#
+'NUMBER',#
+'PLUS',#
+'MINUS',#
+'TIMES',#
+'DIVIDE',#
+'LPAREN',#
+'RPAREN',#
+'LCOMMENT',#
+'RCOMMENT',#
+'TRUE',#
+'FALSE',#
 'TT',
-'EQUAL',
-'LT',
-'ASSIGN',
+'EQUAL',#
+'LT',#
+'ASSIGN',#
 'APP',
-'SEP',
-'LAM',
+'SEP',#
+'LAM',# i dont think we need this
 'VAR',
 'LET',
-'SEQ',
+'SEQ',#
 'ALLOC',
 'SET',
 'GET',
@@ -54,9 +53,9 @@ tokens = (
 'FUNPTR',
 'CALL',
 'F',
-'ID',
+'ID',# not sure if we need this since its alraeady used a rule
 'ARROW',
-'WHITESPACE',
+'SPACE',
 'FUN',
 'ARRAY',
 'BOOL',
@@ -80,6 +79,7 @@ t_ASSIGN = r'\='
 t_SEP = r'\%'
 t_VAR = r'[a-zA-Z_][a-zA-Z0-9_]*'
 t_ARROW = r'\->'
+t_SPACE = r'\ '
 
 
 
@@ -169,9 +169,6 @@ def parser(lexer, current_token, lp_track, rp_track):
     return lexer
 
   elif current_token.type == 'SEQ':
-    # tok1 = lexer.token()
-    # tok2 = lexer.token()
-    # print("push "+ str(tok2.value))
     parser(lexer, lexer.token(), lp_track, rp_track)
     parser(lexer, lexer.token(), lp_track, rp_track)
     return lexer
@@ -189,9 +186,9 @@ def parser(lexer, current_token, lp_track, rp_track):
     tok2 = lexer.token()
 
     if tok1.value < tok2.value:
-      print("push "+ str(tok1.value) + '\nbinary <')
+      print("push true" + '\nbinary <')
     else:
-      print("value is not smaller")
+      print("push false")
     return lexer
 
   elif current_token.type == 'EQUAL':
@@ -199,9 +196,9 @@ def parser(lexer, current_token, lp_track, rp_track):
     tok2 = lexer.token()
 
     if tok1.value == tok2.value:
-      print( "push "+ str(tok1.value)+ '\nbinary ==' )
+      print( "push true" + '\nbinary ==' )
     else:
-      print("doesnt ==")
+      print("push false")
       return lexer
 
   elif current_token.type == 'LCOMMENT':
@@ -215,8 +212,25 @@ def parser(lexer, current_token, lp_track, rp_track):
       elif tok.type == 'RCOMMENT' and comment != 1:
           comment = comment - 1
 
+  elif current_token.type == 'ASSIGN':
+    tok1 = lexer.token()
+    tok2 = lexer.token()
+    tok1 = tok2
+    print("push "+ str(tok1.value))
+    return lexer
         
+  elif current_token.type == 'LAM':
+    function = lambda fun: current_token.type
+    print( str(function.value))
+    return lexer
 
+  elif current_token.type == 'LET':
+    x = parser(lexer, lexer.token(), lp_track, rp_track)
+    if x == lexer.token():
+      val = lexer.token()
+      print("push " + str(val.value))
+
+    
 
 
 
